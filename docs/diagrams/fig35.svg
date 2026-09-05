@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="720" viewBox="0 0 1180 720" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1626"/><stop offset="1" stop-color="#0a1120"/>
+    </linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <style>
+    .card{fill:#16233b;stroke:#26375a;stroke-width:1.4;rx:12}
+    .sel{fill:#183153;stroke:#4c8dff;stroke-width:2.2}
+    .title{fill:#eaf1fb;font-size:22px;font-weight:bold}
+    .h{fill:#eaf1fb;font-size:19px;font-weight:bold}
+    .sub{fill:#8fa1bc;font-size:14px}
+    .mut{fill:#6f82a0;font-size:13px}
+    .ok{fill:#46c46a;font-size:14px}
+    .warn{fill:#e0a63a;font-size:14px}
+    .star{fill:#4c8dff;font-size:20px}
+    .key{fill:#26375a}
+    .kt{fill:#c7d4ea;font-size:13px}
+  </style>
+
+  <rect x="0" y="0" width="1180" height="720" rx="16" fill="url(#bg)"/>
+  <!-- top bar -->
+  <circle cx="46" cy="46" r="14" fill="#4c8dff"/>
+  <text x="72" y="53" class="title">MyBoot</text>
+  <text x="1134" y="53" text-anchor="end" class="sub">UEFI 2.11 · Secure Boot: on · 12:45</text>
+  <line x1="30" y1="78" x2="1150" y2="78" stroke="#22314f" stroke-width="1.4"/>
+  <text x="40" y="118" class="sub">Select an operating system</text>
+
+  <!-- entry 1 (selected) NixOS -->
+  <rect class="sel" x="40" y="140" width="640" height="150" rx="12" filter="url(#sh)"/>
+  <text x="66" y="180" class="star">★</text>
+  <text x="92" y="178" class="h">NixOS 26 — Generation 128</text>
+  <text x="92" y="204" class="sub">Linux 6.12 · Btrfs · current</text>
+  <text x="66" y="238" class="ok">✓ kernel verified</text>
+  <text x="230" y="238" class="ok">✓ initrd verified</text>
+  <text x="390" y="238" class="ok">✓ root found</text>
+  <text x="66" y="264" class="ok">✓ last boot successful</text>
+  <text x="230" y="264" class="mut">▸ 2 older generations · 1 specialisation</text>
+
+  <!-- entry 2 Windows -->
+  <rect class="card" x="40" y="308" width="640" height="96" rx="12" fill="#16233b" stroke="#26375a" stroke-width="1.4"/>
+  <text x="66" y="346" class="h">Windows 11</text>
+  <text x="66" y="374" class="sub">Windows Boot Manager · chainload</text>
+  <text x="430" y="346" class="ok">✓ bootloader verified</text>
+  <text x="430" y="374" class="warn">⚠ previous boot recovered</text>
+
+  <!-- entry 3 Ubuntu -->
+  <rect class="card" x="40" y="422" width="640" height="96" rx="12" fill="#16233b" stroke="#26375a" stroke-width="1.4"/>
+  <text x="66" y="460" class="h">Ubuntu 26.04 LTS</text>
+  <text x="66" y="488" class="sub">Linux EFI stub · 2 kernels</text>
+  <text x="430" y="460" class="ok">✓ bootable</text>
+  <text x="430" y="488" class="warn">⚠ kernel changed recently</text>
+
+  <!-- detail panel -->
+  <rect x="712" y="140" width="428" height="378" rx="12" fill="#111d31" stroke="#26375a" stroke-width="1.4"/>
+  <text x="736" y="176" class="h">Generation 128</text>
+  <text x="736" y="206" class="mut">kernel</text><text x="1116" y="206" text-anchor="end" class="sub">6.12.5</text>
+  <text x="736" y="234" class="mut">initrd</text><text x="1116" y="234" text-anchor="end" class="sub">/EFI/nixos/…-initrd</text>
+  <text x="736" y="262" class="mut">root</text><text x="1116" y="262" text-anchor="end" class="sub">by-uuid/8f3a…</text>
+  <text x="736" y="290" class="mut">Secure Boot</text><text x="1116" y="290" text-anchor="end" class="ok">verified</text>
+  <text x="736" y="318" class="mut">last boots</text><text x="1116" y="318" text-anchor="end" class="ok">12 ok · 0 failed</text>
+  <line x1="736" y1="342" x2="1116" y2="342" stroke="#22314f" stroke-width="1.2"/>
+  <text x="736" y="374" class="mut">health</text>
+  <rect x="736" y="388" width="380" height="30" rx="8" fill="#12331f" stroke="#2E7D32" stroke-width="1.3"/>
+  <text x="752" y="408" class="ok">HEALTHY — recommended default</text>
+  <rect x="736" y="440" width="184" height="46" rx="10" fill="#4c8dff"/>
+  <text x="828" y="469" text-anchor="middle" fill="#08152b" font-size="16" font-weight="bold">Boot</text>
+  <rect x="932" y="440" width="184" height="46" rx="10" fill="none" stroke="#4c8dff" stroke-width="1.6"/>
+  <text x="1024" y="469" text-anchor="middle" fill="#9dc0ff" font-size="16">Options</text>
+
+  <!-- footer hotkeys -->
+  <line x1="30" y1="556" x2="1150" y2="556" stroke="#22314f" stroke-width="1.4"/>
+  <g>
+    <rect class="key" x="40"  y="576" width="34" height="26" rx="5"/><text class="kt" x="57"  y="594" text-anchor="middle">↑↓</text><text class="kt" x="86"  y="594">select</text>
+    <rect class="key" x="160" y="576" width="34" height="26" rx="5"/><text class="kt" x="177" y="594" text-anchor="middle">⏎</text><text class="kt" x="206" y="594">boot</text>
+    <rect class="key" x="300" y="576" width="34" height="26" rx="5"/><text class="kt" x="317" y="594" text-anchor="middle">E</text><text class="kt" x="346" y="594">edit cmdline</text>
+    <rect class="key" x="470" y="576" width="34" height="26" rx="5"/><text class="kt" x="487" y="594" text-anchor="middle">R</text><text class="kt" x="516" y="594">recovery</text>
+    <rect class="key" x="620" y="576" width="34" height="26" rx="5"/><text class="kt" x="637" y="594" text-anchor="middle">F</text><text class="kt" x="666" y="594">firmware setup</text>
+    <rect class="key" x="820" y="576" width="34" height="26" rx="5"/><text class="kt" x="837" y="594" text-anchor="middle">S</text><text class="kt" x="866" y="594">shell</text>
+    <rect class="key" x="940" y="576" width="90" height="26" rx="5"/><text class="kt" x="985" y="594" text-anchor="middle">auto-boot 5s</text>
+  </g>
+  <!-- pointer cursor -->
+  <path d="M560,250 L560,286 L570,277 L578,293 L586,289 L578,273 L590,273 Z" fill="#ffffff" stroke="#0a1120" stroke-width="1.2"/>
+</svg>

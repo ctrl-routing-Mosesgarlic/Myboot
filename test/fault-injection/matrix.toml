@@ -1,0 +1,20 @@
+# Fault-injection matrix (report §5.6). Each case: inject one fault, boot in VM, assert controlled recovery.
+[[case]]
+name = "missing-kernel"
+inject = "delete-esp-file"
+expect = "entry-unbootable; fall back to healthy entry"
+
+[[case]]
+name = "corrupt-initrd"
+inject = "truncate-initrd"
+expect = "validation-fails; rollback offered"
+
+[[case]]
+name = "invalid-signature"
+inject = "resign-untrusted-key"
+expect = "refuse-launch; diagnosed"
+
+[[case]]
+name = "boot-order-drift"
+inject = "windows-reassert-bootorder"
+expect = "reconciliation restores desired order"

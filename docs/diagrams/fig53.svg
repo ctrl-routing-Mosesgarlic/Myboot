@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="420" viewBox="0 0 1180 420" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="r" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker></defs>
+<style>.b{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.5}.t{fill:#16324f;font-size:14px;text-anchor:middle}
+.fi{fill:#FDECD9;stroke:#C55A11;stroke-width:1.6}.ok{fill:#EAF6EC;stroke:#2E7D32;stroke-width:1.6}
+.e{stroke:#1F3864;stroke-width:1.7;fill:none}.cap{fill:#555;font-size:13px}.dt{fill:#7a3b0f;font-size:14px;text-anchor:middle}</style>
+<rect class="fi" x="40" y="150" width="170" height="60" rx="9"/><text class="dt" x="125" y="178">inject fault</text><text class="dt" x="125" y="196">(from matrix)</text>
+<rect class="b" x="250" y="150" width="150" height="60" rx="9"/><text class="t" x="325" y="185">boot in VM</text>
+<rect class="b" x="440" y="150" width="160" height="60" rx="9"/><text class="t" x="520" y="178">manager detects</text><text class="t" x="520" y="196">+ diagnoses</text>
+<rect class="b" x="640" y="150" width="180" height="60" rx="9"/><text class="t" x="730" y="178">recover / rollback</text><text class="t" x="730" y="196">to a good entry</text>
+<rect class="ok" x="860" y="150" width="180" height="60" rx="9"/><text class="t" x="950" y="178">assert expected</text><text class="t" x="950" y="196">outcome → PASS</text>
+<g class="e" marker-end="url(#r)">
+<line x1="210" y1="180" x2="250" y2="180"/>
+<line x1="400" y1="180" x2="440" y2="180"/>
+<line x1="600" y1="180" x2="640" y2="180"/>
+<line x1="820" y1="180" x2="860" y2="180"/>
+</g>
+<path class="e" d="M950,210 C950,300 300,300 125,215" marker-end="url(#r)" stroke-dasharray="6 4"/>
+<text class="cap" x="430" y="290">snapshot restore · next case</text>
+<text class="cap" x="40" y="360">Each case injects one fault, boots the manager in a virtual machine, and asserts that it detects the fault and recovers to a working entry rather than crashing.</text>
+<text class="cap" x="40" y="380">The pass criterion is a controlled outcome — diagnosis plus rollback or recovery — never a black screen. A snapshot restores the clean state for the next case.</text>
+</svg>

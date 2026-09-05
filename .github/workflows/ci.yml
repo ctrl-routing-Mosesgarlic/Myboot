@@ -1,0 +1,62 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  host-tests:
+    name: host tests (pure crates)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo test (per pure crate, host target)
+        run: |
+          set -e
+          for c in graph storage ports persistence config policy health \
+                   discovery transaction security providers ui-shell ui-gfx arch; do
+            echo "== testing $c =="
+            cargo test -p "$c" --target x86_64-unknown-linux-gnu
+          done
+
+  build-efi:
+    name: build myboot.efi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-uefi
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build -p myboot --release --target x86_64-unknown-uefi
+      - name: verify it's a PE32+ EFI application
+        run: file target/x86_64-unknown-uefi/release/myboot.efi | grep -q "EFI application"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: myboot.efi
+          path: target/x86_64-unknown-uefi/release/myboot.efi
+
+  lint:
+    name: fmt + clippy
+    runs-on: ubuntu-latest
+    continue-on-error: true   # advisory; doesn't block merges
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-uefi
+          components: rustfmt, clippy
+      - run: cargo fmt --all --check
+      - run: cargo clippy -p myboot --target x86_64-unknown-uefi -- -D warnings
+
+  harness-unit-tests:
+    name: pyboot unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install pytest pexpect
+      - run: python -m pytest tools/tests -q

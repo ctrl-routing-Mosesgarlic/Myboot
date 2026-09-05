@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="760" viewBox="0 0 1180 760" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker></defs>
+<style>
+.b{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.5}.t{fill:#16324f;font-size:14px;text-anchor:middle}
+.hb{fill:#1F3864;stroke:#16324f;stroke-width:1.5}.ht{fill:#fff;font-size:14px;text-anchor:middle;font-weight:bold}
+.e{stroke:#1F3864;stroke-width:1.7;fill:none}.cap{fill:#555;font-size:13px}.lab{fill:#7a3b0f;font-size:13px;font-weight:bold}
+.mgr{fill:#C55A11;stroke:#8a3d0b;stroke-width:2}.col{fill:#1F3864;font-size:15px;font-weight:bold;text-anchor:middle}
+</style>
+<rect class="b" x="500" y="26" width="180" height="34" rx="6"/><text class="t" x="590" y="48">POWER ON</text>
+<rect class="hb" x="410" y="82" width="360" height="40" rx="6"/><text class="ht" x="590" y="107">UEFI firmware  ·  PEI → DXE → BDS</text>
+<rect class="mgr" x="430" y="146" width="320" height="44" rx="8"/><text class="ht" x="590" y="173">MyBoot — boot manager</text>
+<line class="e" x1="590" y1="60" x2="590" y2="82" marker-end="url(#m)"/>
+<line class="e" x1="590" y1="122" x2="590" y2="146" marker-end="url(#m)"/>
+<line x1="120" y1="215" x2="1060" y2="215" stroke="#C55A11" stroke-width="1.6" stroke-dasharray="7 5"/>
+<text class="lab" x="590" y="209" text-anchor="middle">ExitBootServices — the boot manager's job ends here; control passes to the OS</text>
+<line class="e" x1="560" y1="190" x2="300" y2="250" marker-end="url(#m)"/>
+<line class="e" x1="620" y1="190" x2="880" y2="250" marker-end="url(#m)"/>
+<text class="col" x="300" y="245">Linux</text><text class="col" x="880" y="245">Windows</text>
+<!-- linux -->
+<rect class="b" x="150" y="258" width="300" height="38" rx="6"/><text class="t" x="300" y="282">Linux EFI-stub kernel</text>
+<rect class="b" x="150" y="314" width="300" height="38" rx="6"/><text class="t" x="300" y="338">kernel init</text>
+<rect class="b" x="150" y="370" width="300" height="38" rx="6"/><text class="t" x="300" y="394">initramfs</text>
+<rect class="b" x="150" y="426" width="300" height="38" rx="6"/><text class="t" x="300" y="450">systemd (PID 1)</text>
+<rect class="b" x="150" y="482" width="300" height="38" rx="6"/><text class="t" x="300" y="506">display manager (GDM / SDDM)</text>
+<rect class="b" x="150" y="538" width="300" height="38" rx="6"/><text class="t" x="300" y="562">Wayland / X11 compositor</text>
+<rect class="hb" x="150" y="594" width="300" height="40" rx="6"/><text class="ht" x="300" y="619">Desktop (GNOME / KDE)</text>
+<!-- windows -->
+<rect class="b" x="730" y="258" width="300" height="38" rx="6"/><text class="t" x="880" y="282">Windows Boot Manager (bootmgfw.efi)</text>
+<rect class="b" x="730" y="314" width="300" height="38" rx="6"/><text class="t" x="880" y="338">winload.efi</text>
+<rect class="b" x="730" y="370" width="300" height="38" rx="6"/><text class="t" x="880" y="394">Windows kernel</text>
+<rect class="b" x="730" y="426" width="300" height="38" rx="6"/><text class="t" x="880" y="450">smss.exe → winlogon</text>
+<rect class="b" x="730" y="482" width="300" height="38" rx="6"/><text class="t" x="880" y="506">Explorer shell</text>
+<rect class="hb" x="730" y="594" width="300" height="40" rx="6"/><text class="ht" x="880" y="619">Desktop</text>
+<g stroke="#1F3864" stroke-width="1.7" fill="none" marker-end="url(#m)">
+<line x1="300" y1="296" x2="300" y2="314"/><line x1="300" y1="352" x2="300" y2="370"/><line x1="300" y1="408" x2="300" y2="426"/><line x1="300" y1="464" x2="300" y2="482"/><line x1="300" y1="520" x2="300" y2="538"/><line x1="300" y1="576" x2="300" y2="594"/>
+<line x1="880" y1="296" x2="880" y2="314"/><line x1="880" y1="352" x2="880" y2="370"/><line x1="880" y1="408" x2="880" y2="426"/><line x1="880" y1="464" x2="880" y2="482"/><line x1="880" y1="538" x2="880" y2="594"/>
+</g>
+<text class="cap" x="120" y="675">The boot manager occupies one stage of the chain: it prepares the machine and hands control to the operating system at ExitBootServices.</text>
+<text class="cap" x="120" y="695">Everything below the dashed line is the operating system's own responsibility; the graphical MyBoot interface is a pre-OS environment, distinct from the desktop.</text>
+</svg>

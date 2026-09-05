@@ -1,0 +1,12 @@
+[package]
+name = "health"
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+graph = { path = "../graph" }
+ports = { path = "../ports" }
+
+[dev-dependencies]
+ports = { path = "../ports", features = ["mock"] }

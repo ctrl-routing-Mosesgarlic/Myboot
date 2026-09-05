@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="m4" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker></defs>
+<style>.band{fill:#F5F8FC;stroke:#B9CBE4;stroke-width:1}.lbl{fill:#1F3864;font-size:14px;font-weight:bold}
+.b{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.4}.t{fill:#16324f;font-size:13.5px;text-anchor:middle}
+.hb{fill:#1F3864}.ht{fill:#fff;font-size:14px;text-anchor:middle;font-weight:bold}
+.v{fill:#EAF6EC;stroke:#2E7D32;stroke-width:1.4}.vt{fill:#1e5b2a;font-size:12.5px;text-anchor:middle}.cap{fill:#555;font-size:13px}</style>
+<rect class="band" x="30" y="40" width="900" height="60"/><text class="lbl" x="45" y="30">Presentation (three faces)</text>
+<rect class="b" x="120" y="52" width="200" height="36" rx="6"/><text class="t" x="220" y="75">graphical menu</text>
+<rect class="b" x="400" y="52" width="180" height="36" rx="6"/><text class="t" x="490" y="75">pre-boot shell</text>
+<rect class="b" x="660" y="52" width="200" height="36" rx="6"/><text class="t" x="760" y="75">host-side CLI</text>
+<rect class="band" x="30" y="120" width="900" height="150"/><text class="lbl" x="45" y="138">Management (the contribution)</text>
+<rect class="b" x="70" y="150" width="150" height="34" rx="6"/><text class="t" x="145" y="172">Boot Graph</text>
+<rect class="b" x="240" y="150" width="150" height="34" rx="6"/><text class="t" x="315" y="172">OS adapters</text>
+<rect class="b" x="410" y="150" width="120" height="34" rx="6"/><text class="t" x="470" y="172">health</text>
+<rect class="b" x="550" y="150" width="130" height="34" rx="6"/><text class="t" x="615" y="172">policy</text>
+<rect class="b" x="700" y="150" width="180" height="34" rx="6"/><text class="t" x="790" y="172">transaction</text>
+<rect class="b" x="240" y="212" width="200" height="34" rx="6"/><text class="t" x="340" y="234">config + reconciliation</text>
+<rect class="b" x="470" y="212" width="200" height="34" rx="6"/><text class="t" x="570" y="234">diagnostics / recovery</text>
+<rect class="band" x="30" y="290" width="900" height="56"/><text class="lbl" x="45" y="308">Discovery</text>
+<rect class="b" x="240" y="300" width="420" height="36" rx="6"/><text class="t" x="450" y="323">disks · partitions · ESP · firmware variables · BLS / bootspec</text>
+<rect class="band" x="30" y="366" width="900" height="56"/><text class="lbl" x="45" y="384">Platform</text>
+<rect class="b" x="240" y="376" width="420" height="36" rx="6"/><text class="t" x="450" y="399">uefi-rs wrappers (GOP · storage · variables · files)</text>
+<rect class="hb" x="30" y="442" width="900" height="40" rx="4"/><text class="ht" x="480" y="467">UEFI firmware — BootOrder · BootNext · BootCurrent</text>
+<line class="e" x1="480" y1="100" x2="480" y2="120" stroke="#1F3864" stroke-width="1.6" marker-end="url(#m4)"/>
+<line x1="480" y1="270" x2="480" y2="290" stroke="#1F3864" stroke-width="1.6" marker-end="url(#m4)"/>
+<line x1="450" y1="346" x2="450" y2="366" stroke="#1F3864" stroke-width="1.6" marker-end="url(#m4)"/>
+<line x1="450" y1="422" x2="450" y2="442" stroke="#1F3864" stroke-width="1.6" marker-end="url(#m4)"/>
+<!-- verification side -->
+<rect class="v" x="960" y="120" width="190" height="150" rx="8"/><text class="vt" x="1055" y="150" font-weight="bold">Verification</text>
+<text class="vt" x="1055" y="178">TLA+ — the boot</text><text class="vt" x="1055" y="196">transaction (design)</text>
+<text class="vt" x="1055" y="226">Kani — the parsers</text><text class="vt" x="1055" y="244">(code)</text>
+<text class="cap" x="30" y="510">Delegation and standard-interface discovery run throughout: MyBoot launches or federates native components rather than replacing them,</text>
+<text class="cap" x="30" y="530">and it is built above the firmware's own boot variables. The management layer is the contribution; Rust and the UI are the implementation.</text>
+</svg>

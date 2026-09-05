@@ -1,0 +1,20 @@
+# MyBoot — Cargo workspace
+[workspace]
+resolver = "2"
+members = [
+    "bin/myboot",
+    "crates/platform", "crates/storage", "crates/discovery", "crates/graph", "crates/ports",
+    "crates/providers", "crates/health", "crates/policy", "crates/transaction",
+    "crates/config", "crates/persistence", "crates/ui-gfx", "crates/ui-shell",
+    "crates/security", "crates/arch", "crates/engine",
+]
+exclude = ["host-cli", "xtask"]   # host std binaries — build with an explicit host --target
+
+[workspace.package]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = ["Shaka"]
+
+[workspace.dependencies]
+uefi = { version = "0.33", features = ["alloc", "logger", "panic_handler"] }
+log = "0.4"

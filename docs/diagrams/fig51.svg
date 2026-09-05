@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="520" viewBox="0 0 1180 520" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="p" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker></defs>
+<style>.t{fill:#ffffff;font-size:15px;text-anchor:middle;font-weight:bold}.s{fill:#eef3fb;font-size:12.5px;text-anchor:middle}
+.cap{fill:#555;font-size:13px}.ax{fill:#1F3864;font-size:13px;font-weight:bold}</style>
+<polygon points="120,420 1060,420 900,330 280,330" fill="#2E7D32"/>
+<text class="t" x="590" y="378">Unit &amp; property tests + Kani proofs</text><text class="s" x="590" y="400">off-metal · milliseconds · exhaustive within input bounds</text>
+<polygon points="280,325 900,325 800,240 380,240" fill="#2E5496"/>
+<text class="t" x="590" y="285">Integration in QEMU + OVMF</text><text class="s" x="590" y="305">boot real operating systems in emulated firmware</text>
+<polygon points="380,235 800,235 720,155 460,155" fill="#5B3FA0"/>
+<text class="t" x="590" y="197">Fault injection &amp; recovery</text><text class="s" x="590" y="217">deliberate corruption · assert safe recovery</text>
+<polygon points="460,150 720,150 590,70 590,70" fill="#C55A11"/>
+<text class="t" x="590" y="128">Hardware</text><text class="s" x="590" y="146">last · few machines</text>
+<line x1="1110" y1="110" x2="1110" y2="410" stroke="#1F3864" stroke-width="2" marker-start="url(#p)"/>
+<text class="ax" x="1130" y="270" transform="rotate(90 1130,270)">fidelity · cost ↑</text>
+<line x1="70" y1="410" x2="70" y2="110" stroke="#2E7D32" stroke-width="2" marker-end="url(#p)"/>
+<text class="ax" x="52" y="270" transform="rotate(-90 52,270)" fill="#2E7D32">volume · speed ↑</text>
+<text class="cap" x="120" y="470">Most defects are caught at the base, cheaply and exhaustively; each level above trades speed for fidelity. Hardware is validated last.ls pass.</text>
+</svg>

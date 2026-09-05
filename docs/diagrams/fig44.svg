@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="a4" markerWidth="11" markerHeight="11" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker>
+  </defs>
+  <style>
+    .disk{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.4}
+    .hdr{fill:#1F3864}
+    .htx{fill:#fff;font-size:14px;text-anchor:middle}
+    .t{fill:#16324f;font-size:14px;text-anchor:middle}
+    .s{fill:#4a6076;font-size:12px;text-anchor:middle}
+    .code{fill:#FFFFFF;stroke:#2E5496;stroke-width:1.5}
+    .ct{fill:#16324f;font-size:15px;text-anchor:middle;font-family:Consolas,monospace}
+    .e{stroke:#1F3864;stroke-width:1.8;fill:none}
+    .verify{fill:none;stroke:#2E7D32;stroke-width:1.8;stroke-dasharray:7 4}
+    .vt{fill:#2E7D32;font-size:14px;font-weight:bold}
+    .cap{fill:#555;font-size:13px}
+    .secn{fill:#1F3864;font-size:15px;font-weight:bold}
+  </style>
+
+  <text class="secn" x="60" y="40">GPT on-disk layout</text>
+  <!-- disk stack -->
+  <rect class="disk hdr" x="60" y="60"  width="360" height="34"/><text class="htx" x="240" y="82">LBA 0 — Protective MBR</text>
+  <rect class="disk hdr" x="60" y="96"  width="360" height="34"/><text class="htx" x="240" y="118">LBA 1 — GPT header ("EFI PART")</text>
+  <rect class="disk" x="60" y="132" width="360" height="42"/><text class="t" x="240" y="152">LBA 2–33 — partition entry array</text><text class="s" x="240" y="168">128 entries × 128 bytes</text>
+  <rect class="disk" x="60" y="176" width="360" height="34"/><text class="t" x="240" y="198">ESP (FAT32)</text>
+  <rect class="disk" x="60" y="212" width="360" height="34"/><text class="t" x="240" y="234">Windows / Linux / NixOS …</text>
+  <rect class="disk hdr" x="60" y="248" width="360" height="34"/><text class="htx" x="240" y="270">backup GPT (last LBAs)</text>
+
+  <text class="secn" x="620" y="40">Parser pipeline (storage crate)</text>
+  <rect class="code" x="620" y="70"  width="300" height="48" rx="6"/><text class="ct" x="770" y="100">raw &amp;[u8]  (Block I/O)</text>
+  <rect class="code" x="620" y="150" width="300" height="48" rx="6"/><text class="ct" x="770" y="180">GptHeader::parse(&amp;buf)</text>
+  <rect class="code" x="620" y="230" width="300" height="48" rx="6"/><text class="ct" x="770" y="260">GptEntry::parse(&amp;buf)</text>
+  <rect class="code" x="620" y="310" width="300" height="48" rx="6"/><text class="ct" x="770" y="333">VolumeSet → ESP + volumes</text>
+
+  <line class="e" x1="770" y1="118" x2="770" y2="150" marker-end="url(#a4)"/>
+  <line class="e" x1="770" y1="198" x2="770" y2="230" marker-end="url(#a4)"/>
+  <line class="e" x1="770" y1="278" x2="770" y2="310" marker-end="url(#a4)"/>
+  <line class="e" x1="420" y1="113" x2="618" y2="94" marker-end="url(#a4)"/>
+  <line class="e" x1="420" y1="153" x2="618" y2="174" marker-end="url(#a4)"/>
+
+  <!-- Kani verified boundary -->
+  <rect class="verify" x="600" y="138" width="340" height="150" rx="10"/>
+  <text class="vt" x="945" y="150" transform="rotate(90 945,150)">Kani-verified (§3.12)</text>
+  <text class="vt" x="612" y="132">no panic · no out-of-bounds</text>
+
+  <text class="cap" x="60" y="420">The storage crate reads raw sectors through UEFI Block I/O and turns them into typed structures. The header and entry</text>
+  <text class="cap" x="60" y="440">parsers operate on bounds-checked slices and are the exact functions the Kani harnesses of Section 3.12 prove total</text>
+  <text class="cap" x="60" y="460">(every input yields Ok or Err, never a panic or out-of-bounds read). FAT, PE/COFF and BLS parsers follow the same discipline.</text>
+</svg>

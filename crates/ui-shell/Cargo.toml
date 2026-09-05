@@ -1,0 +1,10 @@
+[package]
+name = "ui-shell"
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+graph = { path = "../graph" }
+ports = { path = "../ports" }
+transaction = { path = "../transaction" }

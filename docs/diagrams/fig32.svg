@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="600" viewBox="0 0 1180 600" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="a2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#7d93b0"/></marker></defs>
+<style>.root{fill:#1F3864}.rt{fill:#fff;font-size:14px;text-anchor:middle;font-weight:bold}
+.disk{fill:#DCE7F6;stroke:#2E5496;stroke-width:1.4}.os{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.4}
+.ent{fill:#FFFFFF;stroke:#8aa4c8;stroke-width:1.2}.t{fill:#16324f;font-size:13px}.tb{fill:#16324f;font-size:13.5px;font-weight:bold}
+.lk{stroke:#7d93b0;stroke-width:1.3;fill:none}.ok{fill:#2E7D32;font-size:13px;font-weight:bold}.warn{fill:#C55A11;font-size:13px;font-weight:bold}.cap{fill:#555;font-size:13px}</style>
+<rect class="root" x="40" y="270" width="150" height="46" rx="8"/><text class="rt" x="115" y="298">Boot Graph</text>
+<!-- disks -->
+<rect class="disk" x="250" y="120" width="150" height="40" rx="6"/><text class="tb" x="265" y="145">NVMe0</text>
+<rect class="disk" x="250" y="470" width="150" height="40" rx="6"/><text class="tb" x="265" y="495">USB0</text>
+<path class="lk" d="M190,285 C220,200 220,160 250,140" marker-end="url(#a2)"/>
+<path class="lk" d="M190,300 C220,430 220,470 250,490" marker-end="url(#a2)"/>
+<!-- os nodes -->
+<rect class="os" x="470" y="70" width="150" height="38" rx="6"/><text class="tb" x="485" y="94">Windows</text>
+<rect class="os" x="470" y="210" width="150" height="38" rx="6"/><text class="tb" x="485" y="234">NixOS</text>
+<rect class="os" x="470" y="360" width="150" height="38" rx="6"/><text class="tb" x="485" y="384">Ubuntu</text>
+<path class="lk" d="M400,135 C440,110 445,95 470,89" marker-end="url(#a2)"/>
+<path class="lk" d="M400,140 C440,180 445,215 470,229" marker-end="url(#a2)"/>
+<path class="lk" d="M400,150 C440,280 445,360 470,379" marker-end="url(#a2)"/>
+<rect class="os" x="470" y="490" width="200" height="38" rx="6"/><text class="tb" x="485" y="514">Linux installer</text>
+<path class="lk" d="M400,490 C440,495 450,505 470,509" marker-end="url(#a2)"/>
+<!-- windows entries -->
+<rect class="ent" x="700" y="40" width="270" height="30" rx="5"/><text class="t" x="712" y="60">Windows 11</text><text class="ok" x="940" y="60">✓</text>
+<rect class="ent" x="700" y="78" width="270" height="30" rx="5"/><text class="t" x="712" y="98">Windows Recovery (WinRE)</text><text class="ok" x="940" y="98">✓</text>
+<rect class="ent" x="700" y="116" width="270" height="30" rx="5"/><text class="t" x="712" y="136">Windows Boot Manager</text><text class="warn" x="940" y="136">⚠</text>
+<path class="lk" d="M620,86 C660,60 665,56 700,55" marker-end="url(#a2)"/>
+<path class="lk" d="M620,90 C660,92 665,93 700,93" marker-end="url(#a2)"/>
+<path class="lk" d="M620,95 C660,125 665,130 700,131" marker-end="url(#a2)"/>
+<!-- nixos entries -->
+<rect class="ent" x="700" y="176" width="270" height="30" rx="5"/><text class="t" x="712" y="196">Generation 128 (current)</text><text class="ok" x="940" y="196">✓</text>
+<rect class="ent" x="720" y="214" width="250" height="28" rx="5"/><text class="t" x="732" y="233">↳ spec: VFIO gaming</text><text class="ok" x="940" y="233">✓</text>
+<rect class="ent" x="700" y="248" width="270" height="30" rx="5"/><text class="t" x="712" y="268">Generation 127</text><text class="ok" x="940" y="268">✓</text>
+<rect class="ent" x="700" y="286" width="270" height="30" rx="5"/><text class="t" x="712" y="306">Generation 126</text><text class="warn" x="940" y="306">⚠</text>
+<path class="lk" d="M620,225 C660,195 665,192 700,191" marker-end="url(#a2)"/>
+<path class="lk" d="M620,230 C665,225 680,228 720,228" marker-end="url(#a2)"/>
+<path class="lk" d="M620,235 C660,262 665,263 700,263" marker-end="url(#a2)"/>
+<path class="lk" d="M620,240 C660,300 665,300 700,301" marker-end="url(#a2)"/>
+<!-- ubuntu entries -->
+<rect class="ent" x="700" y="346" width="270" height="30" rx="5"/><text class="t" x="712" y="366">Kernel 6.x (current)</text><text class="ok" x="940" y="366">✓</text>
+<rect class="ent" x="700" y="384" width="270" height="30" rx="5"/><text class="t" x="712" y="404">Kernel 6.x (fallback)</text><text class="ok" x="940" y="404">✓</text>
+<path class="lk" d="M620,379 C660,363 665,362 700,361" marker-end="url(#a2)"/>
+<path class="lk" d="M620,384 C660,398 665,398 700,399" marker-end="url(#a2)"/>
+<text class="cap" x="1010" y="200" transform="rotate(90 1010,200)" fill="#2E7D32" font-weight="bold">health badges</text>
+<text class="cap" x="40" y="560">Every bootable environment is a node: disks → operating systems → generations, kernels, specialisations and recovery entries, each carrying a health status.</text>
+<text class="cap" x="40" y="580">The hierarchy scales to N operating systems × N generations × N kernels without overflowing a flat list, and the interfaces navigate the graph rather than a sequence.</text>
+</svg>

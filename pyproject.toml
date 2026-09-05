@@ -1,0 +1,16 @@
+[project]
+name = "pyboot"
+version = "1.0.0"
+description = "Build, test, and install tooling for the MyBoot UEFI boot manager"
+requires-python = ">=3.10"
+dependencies = ["pexpect>=4.8"]
+
+[project.scripts]
+pyboot = "pyboot.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["pyboot"]

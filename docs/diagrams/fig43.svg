@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="420" viewBox="0 0 1180 420" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="a3" markerWidth="11" markerHeight="11" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker>
+  </defs>
+  <style>
+    .b{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.5}
+    .ram{fill:#EAF6EC;stroke:#2E7D32;stroke-width:1.5}
+    .vram{fill:#FDECD9;stroke:#C55A11;stroke-width:1.5}
+    .t{fill:#16324f;font-size:16px;text-anchor:middle}
+    .s{fill:#33556f;font-size:13px;text-anchor:middle}
+    .e{stroke:#1F3864;stroke-width:2;fill:none}
+    .el{fill:#1F3864;font-size:14px;font-weight:bold;text-anchor:middle}
+    .cap{fill:#555;font-size:13px}
+    .zone{fill:none;stroke:#9db6d6;stroke-width:1;stroke-dasharray:5 4}
+    .zt{fill:#5b6f88;font-size:13px;font-weight:bold}
+  </style>
+
+  <!-- zones -->
+  <rect class="zone" x="40" y="70" width="760" height="220"/>
+  <text class="zt" x="55" y="90">System RAM (engine)</text>
+  <rect class="zone" x="840" y="70" width="300" height="220"/>
+  <text class="zt" x="855" y="90">Video memory / display</text>
+
+  <rect class="b" x="70" y="130" width="200" height="90" rx="8"/>
+  <text class="t" x="170" y="170">Boot Graph view</text>
+  <text class="s" x="170" y="192">widgets · menu · badges</text>
+
+  <rect class="ram" x="330" y="130" width="210" height="90" rx="8"/>
+  <text class="t" x="435" y="165">Back buffer</text>
+  <text class="s" x="435" y="187">Vec&lt;BltPixel&gt;</text>
+  <text class="s" x="435" y="205">(off-screen)</text>
+
+  <rect class="ram" x="600" y="130" width="180" height="90" rx="8"/>
+  <text class="t" x="690" y="165">Dirty-region</text>
+  <text class="s" x="690" y="187">tracker</text>
+  <text class="s" x="690" y="205">changed rects only</text>
+
+  <rect class="vram" x="880" y="130" width="220" height="90" rx="8"/>
+  <text class="t" x="990" y="165">GOP framebuffer</text>
+  <text class="s" x="990" y="187">linear, on-screen</text>
+  <text class="s" x="990" y="205">→ display panel</text>
+
+  <line class="e" x1="270" y1="175" x2="330" y2="175" marker-end="url(#a3)"/>
+  <text class="el" x="300" y="120">draw</text>
+  <line class="e" x1="540" y1="175" x2="600" y2="175" marker-end="url(#a3)"/>
+  <line class="e" x1="780" y1="175" x2="880" y2="175" marker-end="url(#a3)"/>
+  <text class="el" x="830" y="120">blt()</text>
+  <text class="s" x="830" y="240">BufferToVideo:</text>
+  <text class="s" x="830" y="258">Full or SubRectangle</text>
+
+  <text class="cap" x="40" y="330">Frames are composited off-screen and copied to the GOP framebuffer with blt(BltOp::BufferToVideo, …), eliminating tearing;</text>
+  <text class="cap" x="40" y="352">the dirty-region tracker restricts each copy to BltRegion::SubRectangle over changed areas, minimising memory-bus traffic.</text>
+</svg>

@@ -1,0 +1,13 @@
+[package]
+name = "xtask"
+edition = "2021"
+version = "0.0.0"
+publish = false
+
+# Host build/automation tool. Build with an explicit host target, e.g.:
+#   cargo run --manifest-path xtask/Cargo.toml --target x86_64-unknown-linux-gnu -- run
+[dependencies]
+
+[[bin]]
+name = "xtask"
+path = "src/main.rs"

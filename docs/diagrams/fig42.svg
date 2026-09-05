@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="720" viewBox="0 0 1180 720" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="a2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker>
+    <marker id="a2d" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#C55A11"/></marker>
+  </defs>
+  <style>
+    .b{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.5}
+    .t{fill:#16324f;font-size:15px;text-anchor:middle}
+    .hb{fill:#1F3864;stroke:#16324f;stroke-width:1.5}
+    .ht{fill:#fff;font-size:15px;text-anchor:middle;font-weight:bold}
+    .d{fill:#FDECD9;stroke:#C55A11;stroke-width:1.5}
+    .dt{fill:#7a3b0f;font-size:14px;text-anchor:middle}
+    .e{stroke:#1F3864;stroke-width:1.6;fill:none}
+    .ed{stroke:#C55A11;stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+    .cap{fill:#555;font-size:13px}
+    .lab{fill:#1F3864;font-size:13px;font-weight:bold}
+  </style>
+
+  <!-- left column: pre-handoff -->
+  <rect class="hb" x="40" y="30"  width="420" height="40" rx="6"/><text class="ht" x="250" y="55">Power on → firmware runs BOOTX64.EFI</text>
+  <rect class="b"  x="120" y="95" width="210" height="38" rx="6"/><text class="t" x="225" y="119">#[entry] efi_main()</text>
+  <rect class="b"  x="120" y="150" width="210" height="38" rx="6"/><text class="t" x="225" y="174">uefi::helpers::init()</text>
+  <rect class="b"  x="95"  y="205" width="260" height="38" rx="6"/><text class="t" x="225" y="229">acquire GOP + image filesystem</text>
+  <rect class="b"  x="80"  y="260" width="290" height="38" rx="6"/><text class="t" x="225" y="284">discover: GPT · FAT · ESP · vars · BLS</text>
+  <rect class="b"  x="110" y="315" width="230" height="38" rx="6"/><text class="t" x="225" y="339">build Boot Graph (in memory)</text>
+  <rect class="b"  x="110" y="370" width="230" height="38" rx="6"/><text class="t" x="225" y="394">validate + health scoring</text>
+  <rect class="b"  x="110" y="425" width="230" height="38" rx="6"/><text class="t" x="225" y="449">policy → recommended default</text>
+  <rect class="b"  x="95"  y="480" width="260" height="38" rx="6"/><text class="t" x="225" y="504">render menu → user selection</text>
+  <rect class="b"  x="95"  y="535" width="260" height="38" rx="6"/><text class="t" x="225" y="559">transaction: validate → stage (charge)</text>
+  <rect class="hb" x="80"  y="590" width="290" height="40" rx="6"/><text class="ht" x="225" y="615">GetMemoryMap → ExitBootServices</text>
+  <rect class="hb" x="110" y="650" width="230" height="40" rx="6"/><text class="ht" x="225" y="675">provider.boot → HANDOFF</text>
+
+  <!-- vertical edges left -->
+  <line class="e" x1="225" y1="70"  x2="225" y2="95"  marker-end="url(#a2)"/>
+  <line class="e" x1="225" y1="133" x2="225" y2="150" marker-end="url(#a2)"/>
+  <line class="e" x1="225" y1="188" x2="225" y2="205" marker-end="url(#a2)"/>
+  <line class="e" x1="225" y1="243" x2="225" y2="260" marker-end="url(#a2)"/>
+  <line class="e" x1="225" y1="298" x2="225" y2="315" marker-end="url(#a2)"/>
+  <line class="e" x1="225" y1="353" x2="225" y2="370" marker-end="url(#a2)"/>
+  <line class="e" x1="225" y1="408" x2="225" y2="425" marker-end="url(#a2)"/>
+  <line class="e" x1="225" y1="463" x2="225" y2="480" marker-end="url(#a2)"/>
+  <line class="e" x1="225" y1="518" x2="225" y2="535" marker-end="url(#a2)"/>
+  <line class="e" x1="225" y1="573" x2="225" y2="590" marker-end="url(#a2)"/>
+  <line class="e" x1="225" y1="630" x2="225" y2="650" marker-end="url(#a2)"/>
+
+  <!-- right column: OS + next-boot confirmation -->
+  <rect class="hb" x="760" y="650" width="330" height="40" rx="6"/><text class="ht" x="925" y="675">operating system runs (manager gone)</text>
+  <rect class="b"  x="800" y="470" width="250" height="40" rx="6"/><text class="t" x="925" y="495">next boot: read success marker</text>
+  <polygon class="d" points="925,360 1055,410 925,460 795,410"/><text class="dt" x="925" y="405">confirmed?</text>
+  <text class="dt" x="925" y="422">(marker present)</text>
+  <rect class="b" x="770" y="250" width="150" height="40" rx="6"/><text class="t" x="845" y="275">COMMIT</text>
+  <rect class="b" x="945" y="250" width="200" height="40" rx="6"/><text class="t" x="1045" y="269">ROLLBACK →</text><text class="t" x="1045" y="285">last-good / RECOVER</text>
+
+  <!-- edges right -->
+  <line class="ed" x1="810" y1="670" x2="700" y2="670" marker-end="url(#a2d)"/>
+  <line class="ed" x1="360" y1="670" x2="120" y2="670"  stroke-dasharray="0"/>
+  <path class="ed" d="M700,670 C520,670 470,540 360,505" marker-end="url(#a2d)"/>
+  <line class="e" x1="925" y1="650" x2="925" y2="510" marker-end="url(#a2)"/>
+  <line class="e" x1="925" y1="470" x2="925" y2="460" marker-end="url(#a2)"/>
+  <line class="e" x1="880" y1="380" x2="845" y2="290" marker-end="url(#a2)"/>
+  <line class="e" x1="970" y1="380" x2="1030" y2="290" marker-end="url(#a2)"/>
+  <text class="lab" x="800" y="330">yes</text>
+  <text class="lab" x="995" y="330">no</text>
+  <text class="lab" x="470" y="640">next power-on</text>
+
+  <text class="cap" x="60" y="712">Solid arrows: this boot. Dashed arrows: the following boot, when the cooperative success marker is read to commit or roll back the previous attempt.</text>
+</svg>

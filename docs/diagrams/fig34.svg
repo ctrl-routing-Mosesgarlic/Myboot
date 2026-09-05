@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="440" viewBox="0 0 1180 440" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="a4" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker></defs>
+<style>.b{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.5}.t{fill:#16324f;font-size:14px;text-anchor:middle}.s{fill:#4a6076;font-size:12px;text-anchor:middle}
+.d{fill:#FDECD9;stroke:#C55A11;stroke-width:1.6}.dt{fill:#7a3b0f;font-size:14px;text-anchor:middle}
+.ok{fill:#EAF6EC;stroke:#2E7D32;stroke-width:1.5}.e{stroke:#1F3864;stroke-width:1.7;fill:none}.el{fill:#1F3864;font-size:12.5px;text-anchor:middle}.cap{fill:#555;font-size:13px}</style>
+<rect class="b" x="60" y="60" width="230" height="70" rx="8"/><text class="t" x="175" y="90">Desired state</text><text class="s" x="175" y="110">config.toml (declarative)</text>
+<rect class="b" x="60" y="200" width="230" height="70" rx="8"/><text class="t" x="175" y="230">Actual firmware state</text><text class="s" x="175" y="250">GetVariable: Boot#### · BootOrder</text>
+<polygon class="d" points="470,165 570,205 470,245 370,205"/><text class="dt" x="470" y="200">diff?</text><text class="dt" x="470" y="218">drift?</text>
+<rect class="ok" x="650" y="60" width="220" height="60" rx="8"/><text class="t" x="760" y="95">no change</text>
+<rect class="b" x="650" y="175" width="220" height="60" rx="8"/><text class="t" x="760" y="200">stage → SetVariable</text><text class="s" x="760" y="220">snapshot kept for rollback</text>
+<rect class="b" x="650" y="290" width="220" height="60" rx="8"/><text class="t" x="760" y="315">verify → repaired</text><text class="s" x="760" y="335">or restore snapshot</text>
+<line class="e" x1="290" y1="95" x2="370" y2="185" marker-end="url(#a4)"/>
+<line class="e" x1="290" y1="235" x2="370" y2="215" marker-end="url(#a4)"/>
+<line class="e" x1="570" y1="195" x2="650" y2="95" marker-end="url(#a4)"/>
+<text class="el" x="615" y="130">none</text>
+<line class="e" x1="570" y1="210" x2="650" y2="205" marker-end="url(#a4)"/>
+<text class="el" x="615" y="185">differs</text>
+<line class="e" x1="760" y1="235" x2="760" y2="290" marker-end="url(#a4)"/>
+<path class="e" d="M900,320 C1020,300 1020,120 900,95" marker-end="url(#a4)" stroke-dasharray="6 4"/>
+<text class="el" x="1010" y="210" transform="rotate(90 1010,210)">re-check periodically</text>
+<text class="cap" x="60" y="390">The declarative desired state is reconciled against the firmware's own variables; when an installer (e.g. a Windows update) re-asserts its boot</text>
+<text class="cap" x="60" y="410">manager at the head of BootOrder, the drift is detected and repaired, reversibly, without touching any operating system's own configuration.</text>
+</svg>

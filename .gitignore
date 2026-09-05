@@ -1,0 +1,10 @@
+/target
+**/target
+/esp
+/build
+/firmware
+/OVMF_VARS.fd
+/.direnv
+Cargo.lock
+__pycache__/
+*.pyc

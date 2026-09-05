@@ -1,0 +1,52 @@
+name: release
+on:
+  push:
+    tags: ["v*"]            # a tag like v0.1.0 cuts a release
+  workflow_dispatch:         # or trigger manually
+
+permissions:
+  contents: write            # needed to create the GitHub Release
+
+jobs:
+  build:
+    name: build release assets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-uefi
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build the UEFI application
+        run: cargo build -p myboot --release --target x86_64-unknown-uefi
+
+      - name: Build the host CLI (installed-OS management tool)
+        run: cargo build --manifest-path host-cli/Cargo.toml --release --target x86_64-unknown-linux-gnu
+
+      - name: Stage assets + checksums
+        run: |
+          set -e
+          mkdir -p dist
+          cp target/x86_64-unknown-uefi/release/myboot.efi              dist/myboot.efi
+          cp host-cli/target/x86_64-unknown-linux-gnu/release/myboot    dist/myboot-x86_64-linux || \
+            cp target/x86_64-unknown-linux-gnu/release/myboot           dist/myboot-x86_64-linux
+          cp install.sh                                                 dist/install.sh
+          cd dist
+          for f in myboot.efi myboot-x86_64-linux install.sh; do
+            sha256sum "$f" > "$f.sha256"
+          done
+          ls -l
+
+      - name: Create / update the GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/myboot.efi
+            dist/myboot.efi.sha256
+            dist/myboot-x86_64-linux
+            dist/myboot-x86_64-linux.sha256
+            dist/install.sh
+            dist/install.sh.sha256
+          generate_release_notes: true
+          fail_on_unmatched_files: true

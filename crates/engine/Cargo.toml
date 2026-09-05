@@ -1,0 +1,24 @@
+[package]
+name = "engine"
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+uefi = { workspace = true }
+log = { workspace = true }
+graph = { path = "../graph" }
+storage = { path = "../storage" }
+ports = { path = "../ports" }
+discovery = { path = "../discovery" }
+providers = { path = "../providers" }
+health = { path = "../health" }
+policy = { path = "../policy" }
+transaction = { path = "../transaction" }
+config = { path = "../config" }
+persistence = { path = "../persistence" }
+ui-gfx = { path = "../ui-gfx" }
+ui-shell = { path = "../ui-shell" }
+security = { path = "../security" }
+platform = { path = "../platform" }
+arch = { path = "../arch" }

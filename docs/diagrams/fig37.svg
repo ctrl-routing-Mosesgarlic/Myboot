@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="640" viewBox="0 0 1180 640" font-family="Consolas, monospace">
+  <defs>
+    <filter id="sh3" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.5"/></filter>
+  </defs>
+  <style>
+    .p{fill:#7ee0a0;font-size:16px}      /* prompt */
+    .c{fill:#eaf1fb;font-size:16px}      /* command */
+    .o{fill:#b7c6dd;font-size:15px}      /* output */
+    .k{fill:#8fa1bc;font-size:15px}      /* keys / muted */
+    .ok{fill:#46c46a;font-size:15px}.warn{fill:#e0a63a;font-size:15px}.blue{fill:#6fb0ff;font-size:15px}
+    .tt{fill:#c7d4ea;font-size:14px;font-family:Segoe UI,Arial,sans-serif}
+  </style>
+  <!-- window -->
+  <rect x="40" y="30" width="1100" height="580" rx="12" fill="#0b1220" stroke="#22314f" stroke-width="1.5" filter="url(#sh3)"/>
+  <rect x="40" y="30" width="1100" height="40" rx="12" fill="#132038"/>
+  <rect x="40" y="52" width="1100" height="18" fill="#132038"/>
+  <circle cx="66" cy="50" r="6" fill="#e5544e"/><circle cx="88" cy="50" r="6" fill="#e0a63a"/><circle cx="110" cy="50" r="6" fill="#46c46a"/>
+  <text x="590" y="55" text-anchor="middle" class="tt">MyBoot — pre-boot shell</text>
+
+  <!-- session -->
+  <text x="66" y="104" class="p">myboot&gt;</text><text x="150" y="104" class="c">disks</text>
+  <text x="66"  y="130" class="o">NVMe0</text>
+  <text x="90"  y="152" class="o">├─ ESP (FAT32)   ├─ Windows   ├─ NixOS   └─ Ubuntu</text>
+
+  <text x="66" y="188" class="p">myboot&gt;</text><text x="150" y="188" class="c">os list</text>
+  <text x="66"  y="214" class="o">Windows 11</text><text x="520" y="214" class="ok">✓</text>
+  <text x="66"  y="236" class="o">NixOS — Generation 128 (current)</text><text x="520" y="236" class="ok">✓</text>
+  <text x="66"  y="258" class="o">NixOS — Generation 127</text><text x="520" y="258" class="ok">✓</text>
+  <text x="66"  y="280" class="o">Ubuntu — kernel 6.x</text><text x="520" y="280" class="warn">⚠ kernel changed</text>
+
+  <text x="66" y="316" class="p">myboot&gt;</text><text x="150" y="316" class="c">inspect nixos-128</text>
+  <text x="90"  y="342" class="o">kernel   /EFI/nixos/xxxx-linux-6.12.5-bzImage.efi</text>
+  <text x="90"  y="364" class="o">initrd   /EFI/nixos/xxxx-initrd</text>
+  <text x="90"  y="386" class="o">root     /dev/disk/by-uuid/8f3a-...   secure  </text><text x="470" y="386" class="ok">verified</text>
+  <text x="90"  y="408" class="o">health   </text><text x="170" y="408" class="ok">healthy — last 12 boots ok</text>
+
+  <text x="66" y="444" class="p">myboot&gt;</text><text x="150" y="444" class="c">boot nixos-127</text>
+  <text x="90"  y="470" class="blue">staging generation 127 · attempt charged · verifying loader … OK</text>
+  <text x="90"  y="492" class="blue">GetMemoryMap → ExitBootServices → handoff</text>
+
+  <text x="66" y="528" class="p">myboot&gt;</text>
+  <rect x="150" y="514" width="12" height="20" fill="#7ee0a0"/>
+
+  <line x1="60" y1="556" x2="1120" y2="556" stroke="#22314f" stroke-width="1.2"/>
+  <text x="66" y="582" class="k">commands:  disks · os list · inspect &lt;id&gt; · health &lt;id&gt; · verify &lt;id&gt; · boot &lt;id&gt; · default &lt;id&gt; · diagnostics · log · reboot</text>
+</svg>

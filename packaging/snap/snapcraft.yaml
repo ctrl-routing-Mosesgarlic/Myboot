@@ -1,0 +1,31 @@
+name: myboot
+base: core24
+version: '0.1.0'
+summary: Intelligent, transactional UEFI boot manager (auto-discovers OSes)
+description: |
+  MyBoot is a UEFI boot manager written in Rust. It discovers the operating
+  systems on every disk at boot time (no config to generate), presents a menu,
+  and chainloads the chosen OS with a transactional, roll-back-safe lifecycle.
+  This snap ships the host management CLI and the myboot.efi payload; run
+  `myboot install` to place it on the EFI System Partition.
+grade: stable
+confinement: classic   # needs to write the ESP and call efibootmgr
+
+parts:
+  myboot:
+    plugin: rust
+    source: .
+    rust-features: []
+    override-build: |
+      craftctl default
+      # also build the UEFI payload and ship it alongside the CLI
+      rustup target add x86_64-unknown-uefi || true
+      cargo build -p myboot --release --target x86_64-unknown-uefi
+      install -Dm644 target/x86_64-unknown-uefi/release/myboot.efi \
+        "$CRAFT_PART_INSTALL/usr/lib/myboot/myboot.efi"
+    build-packages: [gcc]
+    stage-packages: [efibootmgr]
+
+apps:
+  myboot:
+    command: bin/myboot

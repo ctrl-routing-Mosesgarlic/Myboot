@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="520" viewBox="0 0 1180 520" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="q" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker></defs>
+<style>.b{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.5}.t{fill:#16324f;font-size:14px;text-anchor:middle}.s{fill:#4a6076;font-size:12px;text-anchor:middle}
+.q{fill:#F4F1FB;stroke:#5B3FA0;stroke-width:2}.qt{fill:#3d2a70;font-size:15px;font-weight:bold}
+.fi{fill:#FDECD9;stroke:#C55A11;stroke-width:1.6}.ft{fill:#7a3b0f;font-size:13px;text-anchor:middle}
+.side{fill:#EAF6EC;stroke:#2E7D32;stroke-width:1.5}.e{stroke:#1F3864;stroke-width:1.6;fill:none}.cap{fill:#555;font-size:13px}</style>
+<rect class="fi" x="40" y="150" width="220" height="150" rx="10"/><text class="ft" x="150" y="180" font-weight="bold">Fault-injection layer</text>
+<text class="ft" x="150" y="208">mutate disk image</text><text class="ft" x="150" y="230">corrupt NVRAM vars</text><text class="ft" x="150" y="252">break config / signatures</text><text class="ft" x="150" y="274">remove partitions</text>
+<rect class="q" x="330" y="60" width="520" height="360" rx="12"/><text class="qt" x="350" y="88">QEMU + OVMF (UEFI firmware)</text>
+<rect class="b" x="360" y="110" width="200" height="56" rx="8"/><text class="t" x="460" y="134">MyBoot.efi</text><text class="s" x="460" y="152">under test (esp/EFI/BOOT)</text>
+<rect class="b" x="360" y="190" width="450" height="40" rx="8"/><text class="t" x="585" y="215">Linux VM image</text>
+<rect class="b" x="360" y="240" width="450" height="40" rx="8"/><text class="t" x="585" y="265">Windows VM image</text>
+<rect class="b" x="360" y="290" width="450" height="40" rx="8"/><text class="t" x="585" y="315">NixOS VM image (multiple generations)</text>
+<rect class="b" x="360" y="350" width="450" height="46" rx="8"/><text class="t" x="585" y="372">snapshots</text><text class="s" x="585" y="388">restore to a known state between tests</text>
+<rect class="side" x="910" y="120" width="230" height="60" rx="8"/><text class="t" x="1025" y="146">serial log</text><text class="s" x="1025" y="166">-serial stdio → assertions</text>
+<rect class="side" x="910" y="250" width="230" height="60" rx="8"/><text class="t" x="1025" y="276">GDB</text><text class="s" x="1025" y="296">-s -S · tcp:1234</text>
+<line class="e" x1="260" y1="200" x2="360" y2="135" marker-end="url(#q)"/>
+<line class="e" x1="260" y1="250" x2="360" y2="250" marker-end="url(#q)"/>
+<line class="e" x1="850" y1="150" x2="910" y2="150" marker-end="url(#q)"/>
+<line class="e" x1="850" y1="280" x2="910" y2="280" marker-end="url(#q)"/>
+<text class="cap" x="40" y="450">A matrix of virtual machines exercises Linux, Windows and NixOS under emulated UEFI firmware. The fault-injection layer deliberately corrupts the disk, the firmware</text>
+<text class="cap" x="40" y="470">variables, the configuration and the signatures; serial output drives automated assertions; snapshots restore a clean state between cases; nothing runs on real hardware.</text>
+</svg>

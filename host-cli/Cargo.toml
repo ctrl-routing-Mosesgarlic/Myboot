@@ -1,0 +1,14 @@
+[package]
+name = "myboot-host"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = ["Shaka"]
+
+# Build for the HOST OS (not the UEFI target):
+#   cargo build -p myboot-host --target x86_64-unknown-linux-gnu
+# This is a standard std binary; it is intentionally OUTSIDE the no_std workspace.
+[dependencies]
+
+[[bin]]
+name = "myboot"
+path = "src/main.rs"

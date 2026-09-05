@@ -1,0 +1,19 @@
+[package]
+name = "myboot"
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+# `global_allocator` is enabled here (only in the final binary): it designates
+# uefi::allocator::Allocator as the #[global_allocator], backed by the firmware
+# pool allocator. The workspace `uefi` already enables `alloc` (heap APIs),
+# `logger`, and `panic_handler`; the allocator choice belongs to the executable.
+uefi = { workspace = true, features = ["global_allocator"] }
+log = { workspace = true }
+engine = { path = "../../crates/engine" }
+platform = { path = "../../crates/platform" }
+
+[[bin]]
+name = "myboot"
+path = "src/main.rs"

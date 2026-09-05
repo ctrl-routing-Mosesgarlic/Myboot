@@ -1,0 +1,233 @@
+myboot/
+├── .cargo/
+│   └── config.toml
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── assets/
+│   ├── fonts/
+│   │   └── .gitkeep
+│   └── icons/
+│       └── .gitkeep
+├── bin/
+│   └── myboot/
+│       ├── src/
+│       │   └── main.rs
+│       └── Cargo.toml
+├── crates/
+│   ├── arch/
+│   │   ├── src/
+│   │   │   ├── x86_64/
+│   │   │   │   ├── cpu.rs
+│   │   │   │   ├── handoff.rs
+│   │   │   │   ├── handoff.s
+│   │   │   │   └── mod.rs
+│   │   │   └── lib.rs
+│   │   └── Cargo.toml
+│   ├── config/
+│   │   ├── src/
+│   │   │   ├── lib.rs
+│   │   │   ├── reconcile.rs
+│   │   │   ├── schema.rs
+│   │   │   └── toml.rs
+│   │   └── Cargo.toml
+│   ├── discovery/
+│   │   ├── src/
+│   │   │   ├── bls.rs
+│   │   │   ├── bootspec.rs
+│   │   │   ├── build.rs
+│   │   │   ├── esp.rs
+│   │   │   ├── json.rs
+│   │   │   ├── lib.rs
+│   │   │   └── variables.rs
+│   │   └── Cargo.toml
+│   ├── engine/
+│   │   ├── src/
+│   │   │   ├── canvas_impl.rs
+│   │   │   ├── lib.rs
+│   │   │   └── pipeline.rs
+│   │   └── Cargo.toml
+│   ├── graph/
+│   │   ├── src/
+│   │   │   └── lib.rs
+│   │   └── Cargo.toml
+│   ├── health/
+│   │   ├── src/
+│   │   │   └── lib.rs
+│   │   └── Cargo.toml
+│   ├── persistence/
+│   │   ├── src/
+│   │   │   ├── lib.rs
+│   │   │   ├── loadopt.rs
+│   │   │   ├── log.rs
+│   │   │   └── nvram.rs
+│   │   └── Cargo.toml
+│   ├── platform/
+│   │   ├── src/
+│   │   │   ├── fs/
+│   │   │   │   └── mod.rs
+│   │   │   ├── gop/
+│   │   │   │   └── mod.rs
+│   │   │   ├── secureboot/
+│   │   │   │   └── mod.rs
+│   │   │   ├── vars/
+│   │   │   │   └── mod.rs
+│   │   │   └── lib.rs
+│   │   └── Cargo.toml
+│   ├── policy/
+│   │   ├── src/
+│   │   │   └── lib.rs
+│   │   └── Cargo.toml
+│   ├── ports/
+│   │   ├── src/
+│   │   │   └── lib.rs
+│   │   └── Cargo.toml
+│   ├── providers/
+│   │   ├── src/
+│   │   │   ├── generic.rs
+│   │   │   ├── lib.rs
+│   │   │   ├── linux.rs
+│   │   │   ├── nixos.rs
+│   │   │   ├── recovery.rs
+│   │   │   ├── registry.rs
+│   │   │   └── windows.rs
+│   │   └── Cargo.toml
+│   ├── security/
+│   │   ├── src/
+│   │   │   ├── lib.rs
+│   │   │   ├── policy.rs
+│   │   │   └── state.rs
+│   │   └── Cargo.toml
+│   ├── storage/
+│   │   ├── src/
+│   │   │   ├── fat/
+│   │   │   │   └── mod.rs
+│   │   │   ├── gpt/
+│   │   │   │   └── mod.rs
+│   │   │   ├── mbr/
+│   │   │   │   └── mod.rs
+│   │   │   ├── pe/
+│   │   │   │   └── mod.rs
+│   │   │   ├── tests/
+│   │   │   │   └── mod.rs
+│   │   │   ├── bytes.rs
+│   │   │   ├── lib.rs
+│   │   │   └── proofs.rs
+│   │   └── Cargo.toml
+│   ├── transaction/
+│   │   ├── src/
+│   │   │   ├── lib.rs
+│   │   │   └── marker.rs
+│   │   └── Cargo.toml
+│   ├── ui-gfx/
+│   │   ├── src/
+│   │   │   ├── canvas.rs
+│   │   │   ├── font.rs
+│   │   │   ├── lib.rs
+│   │   │   ├── menu.rs
+│   │   │   ├── render.rs
+│   │   │   └── theme.rs
+│   │   └── Cargo.toml
+│   └── ui-shell/
+│       ├── src/
+│       │   ├── commands/
+│       │   │   └── mod.rs
+│       │   └── lib.rs
+│       └── Cargo.toml
+├── docs/
+│   ├── adr/
+│   │   ├── 0001-no-relational-database.md
+│   │   ├── 0002-tla-and-kani.md
+│   │   ├── 0003-architecture-style.md
+│   │   └── README.md
+│   ├── diagrams/
+│   │   ├── .gitkeep
+│   │   ├── fig11.svg
+│   │   ├── fig21.svg
+│   │   ├── fig22.svg
+│   │   ├── fig23.svg
+│   │   ├── fig31.svg
+│   │   ├── fig32.svg
+│   │   ├── fig33.svg
+│   │   ├── fig34.svg
+│   │   ├── fig35.svg
+│   │   ├── fig36.svg
+│   │   ├── fig37.svg
+│   │   ├── fig41.svg
+│   │   ├── fig42.svg
+│   │   ├── fig43.svg
+│   │   ├── fig44.svg
+│   │   ├── fig45.svg
+│   │   ├── fig51.svg
+│   │   ├── fig52.svg
+│   │   └── fig53.svg
+│   └── report/
+│       ├── MyBoot_Report_Ch1-2.docx
+│       ├── MyBoot_Report_Ch3.docx
+│       ├── MyBoot_Report_Ch4.docx
+│       ├── MyBoot_Report_Ch5.docx
+│       ├── MyBoot_Report_Ch6.docx
+│       └── README.md
+├── esp/
+│   └── EFI/
+│       ├── BOOT/
+│       │   └── .gitkeep
+│       └── MyBoot/
+│           ├── log/
+│           │   └── .gitkeep
+│           └── config.toml
+├── host-cli/
+│   ├── src/
+│   │   ├── commands/
+│   │   │   ├── bless.rs
+│   │   │   ├── boot_order.rs
+│   │   │   ├── config.rs
+│   │   │   ├── mod.rs
+│   │   │   └── status.rs
+│   │   ├── efivars.rs
+│   │   └── main.rs
+│   ├── Cargo.lock
+│   └── Cargo.toml
+  pyboot/            Python tooling (manage.py: build/test/smoke/iso-test/install/uninstall/usb/verify)
+├── spec/
+│   ├── kani/
+│   │   └── PARSERS.md
+│   ├── proofs/
+│   │   ├── fstar/
+│   │   │   ├── README.md
+│   │   │   └── SecureBootVerify.fst
+│   │   ├── rocq/
+│   │   │   ├── BootPolicy.v
+│   │   │   └── README.md
+│   │   └── README.md
+│   ├── tla/
+│   │   ├── BootTransaction.tla
+│   │   ├── Bounded.cfg
+│   │   └── README.md
+│   └── README.md
+├── test/
+│   ├── fault-injection/
+│   │   └── matrix.toml
+│   ├── fixtures/
+│   │   └── .gitkeep
+│   ├── integration/
+│   │   └── README.md
+│   └── vm-images/
+│       └── .gitkeep
+├── xtask/
+│   ├── src/
+│   │   └── main.rs
+│   ├── Cargo.lock
+│   └── Cargo.toml
+├── .gitignore
+├── BLUEPRINT.md
+├── BUILD_AND_TROUBLESHOOT.md
+├── Cargo.toml
+├── IMPLEMENTATION_STATUS.md
+├── LICENSE-APACHE
+├── LICENSE-MIT
+├── README.md
+├── STRUCTURE.txt
+├── cttest.py
+├── rust-toolchain.toml
+└── rustfmt.toml

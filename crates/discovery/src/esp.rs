@@ -1,0 +1,305 @@
+//! Probe the ESP for well-known loaders, the way rEFInd scans for boot targets
+//! (report §3.3). We look for the Windows boot manager and the removable-media
+//! fallback loader; richer per-distro scanning is layered on by BLS/bootspec.
+extern crate alloc;
+use alloc::vec::Vec;
+use ports::FileStore;
+use graph::{OsKind, EntryRole, BootMethod};
+use crate::RawEntry;
+
+/// Canonical Windows loader path (verified fact: bootmgfw.efi, NOT bootmgr.efi).
+pub const WINDOWS_LOADER: &str = "\\EFI\\Microsoft\\Boot\\bootmgfw.efi";
+/// Removable-media fallback loader path.
+pub const FALLBACK_LOADER: &str = "\\EFI\\BOOT\\BOOTX64.EFI";
+
+pub fn discover<F: FileStore + ?Sized>(fs: &F) -> Vec<RawEntry> {
+    let mut out = Vec::new();
+
+    if fs.exists(WINDOWS_LOADER) {
+        let mut e = RawEntry::new(OsKind::Windows, "Windows", "Windows Boot Manager",
+                                  EntryRole::Default, BootMethod::WindowsBootManager);
+        e.loader = Some(WINDOWS_LOADER.into());
+        out.push(e);
+    }
+
+    if fs.exists(FALLBACK_LOADER) {
+        // Try to give it the REAL distro name (so the menu reads "Ubuntu 26.04.1"
+        // not "EFI Fallback Loader"). Debian-family live/installer ISOs — Ubuntu,
+        // Parrot, Mint, Kali, Zorin, Tails — carry their product string in
+        // `.disk/info`. If we can't identify it, the title stays generic and the
+        // volume tag added later keeps multiple entries distinct.
+        let (os_name, title) = match media_name(fs) {
+            Some(name) => (name.clone(), name),
+            None => (alloc::string::String::from("EFI"),
+                     alloc::string::String::from("EFI Fallback Loader")),
+        };
+        let mut e = RawEntry::new(OsKind::GenericEfi, os_name, title,
+                                  EntryRole::Fallback, BootMethod::EfiChainload);
+        e.loader = Some(FALLBACK_LOADER.into());
+        out.push(e);
+    }
+
+    out
+}
+
+/// Read a human-friendly product name off THIS volume from sources that live on
+/// the FAT EFI partition MyBoot can actually read (an installer ISO's `.disk/info`
+/// is on the ISO9660 side and usually NOT here). Priority: an explicit product
+/// file, then the distro named in the EFI `grub.cfg`, then the FAT volume label.
+/// Pure and total — any read/parse failure just falls through.
+/// Diagnostic: a sample of printable ASCII strings (>= 6 chars) from the fallback
+/// loader binary, so we can SEE what distro markers (if any) are embedded when
+/// automatic naming falls back to generic. Capped so the log stays readable.
+pub fn loader_string_sample<F: FileStore + ?Sized>(fs: &F) -> alloc::string::String {
+    let bytes = match fs.read(FALLBACK_LOADER) {
+        Ok(b) => b,
+        Err(_) => return alloc::string::String::new(),
+    };
+    let mut out = alloc::string::String::new();
+    let mut run = alloc::string::String::new();
+    for &b in bytes.iter() {
+        if b.is_ascii_graphic() || b == b' ' {
+            run.push(b as char);
+        } else {
+            if run.trim().len() >= 6 && out.len() < 400 {
+                out.push_str(run.trim());
+                out.push('|');
+            }
+            run.clear();
+        }
+    }
+    out.chars().take(400).collect()
+}
+
+fn media_name<F: FileStore + ?Sized>(fs: &F) -> Option<alloc::string::String> {
+    // 1. A `BOOT.CSV` next to the loader carries a clean label (shim writes e.g.
+    //    `shimx64.efi,ubuntu,,This is the boot entry for ubuntu`). This is what
+    //    rEFInd reads for installed systems.
+    for path in ["\\EFI\\BOOT\\BOOT.CSV", "\\EFI\\BOOT\\BOOTX64.CSV"] {
+        if let Ok(bytes) = fs.read(path) {
+            if let Some(name) = label_from_boot_csv(&bytes) {
+                return Some(name);
+            }
+        }
+    }
+    // 2. Debian-family product file, if the whole ISO happens to be exposed.
+    for path in ["\\.disk\\info", "\\.disk\\info.txt"] {
+        if let Ok(bytes) = fs.read(path) {
+            if let Some(name) = clean_product_name(&bytes) {
+                return Some(name);
+            }
+        }
+    }
+    // 3. The grub config, if it's on this volume, names the distro.
+    for path in ["\\EFI\\BOOT\\grub.cfg", "\\boot\\grub\\grub.cfg", "\\EFI\\BOOT\\grub\\grub.cfg"] {
+        if let Ok(bytes) = fs.read(path) {
+            if let Some(name) = distro_from_grub_cfg(&bytes) {
+                return Some(name);
+            }
+        }
+    }
+    // 4. Live ISOs have NO config on their EFI partition (only the loaders), so —
+    //    like rEFInd's icon detection — scan the loader BINARY itself for an
+    //    embedded distro string (the ISO's grub carries its distro/boot-dir names).
+    for path in ["\\EFI\\BOOT\\BOOTX64.EFI", "\\EFI\\BOOT\\grubx64.efi", "\\EFI\\BOOT\\shimx64.efi"] {
+        if let Ok(bytes) = fs.read(path) {
+            if let Some(name) = distro_from_bytes(&bytes) {
+                return Some(name);
+            }
+        }
+    }
+    // 5. The FAT volume label (the "ISO volume label"), if it's a real name.
+    if let Some(label) = fs.volume_label() {
+        let l = label.trim();
+        let generic = ["", "ESP", "EFI", "BOOT", "CDROM", "ISOIMAGE", "SYSTEM", "QEMU VVFAT"];
+        if !generic.iter().any(|g| l.eq_ignore_ascii_case(g)) && l.len() >= 2 {
+            return Some(l.chars().take(48).collect());
+        }
+    }
+    None
+}
+
+/// Decode text that may be UTF-8 or UTF-16LE (shim writes BOOT.CSV as UTF-16 with
+/// a BOM).
+fn decode_text(bytes: &[u8]) -> Option<alloc::string::String> {
+    if bytes.len() >= 2 && bytes[0] == 0xFF && bytes[1] == 0xFE {
+        let u16s: alloc::vec::Vec<u16> = bytes[2..]
+            .chunks_exact(2)
+            .map(|c| u16::from_le_bytes([c[0], c[1]]))
+            .collect();
+        return Some(alloc::string::String::from_utf16_lossy(&u16s));
+    }
+    core::str::from_utf8(bytes).ok().map(alloc::string::String::from)
+}
+
+/// A `BOOT.CSV` line is `loader,label,options,description`; the label is the name.
+fn label_from_boot_csv(bytes: &[u8]) -> Option<alloc::string::String> {
+    let text = decode_text(bytes)?;
+    let line = text.lines().next()?.trim().trim_start_matches('\u{feff}');
+    let label = line.split(',').nth(1)?.trim();
+    if label.is_empty() {
+        return None;
+    }
+    // If it's a bare distro id ("ubuntu"), prettify via the marker table.
+    let lower = label.to_ascii_lowercase();
+    for (marker, name) in DISTRO_MARKERS {
+        if lower == *marker {
+            return Some(alloc::string::String::from(*name));
+        }
+    }
+    Some(label.chars().take(48).collect())
+}
+
+/// Scan a loader binary's bytes for the first known distro marker (ASCII,
+/// case-insensitive). This is how rEFInd guesses an OS from a bare loader.
+fn distro_from_bytes(bytes: &[u8]) -> Option<alloc::string::String> {
+    for (marker, name) in DISTRO_MARKERS {
+        if contains_ascii_ci(bytes, marker.as_bytes()) {
+            return Some(alloc::string::String::from(*name));
+        }
+    }
+    None
+}
+
+/// Case-insensitive ASCII substring search over raw bytes.
+fn contains_ascii_ci(hay: &[u8], needle: &[u8]) -> bool {
+    if needle.is_empty() || hay.len() < needle.len() {
+        return false;
+    }
+    hay.windows(needle.len())
+        .any(|w| w.iter().zip(needle).all(|(a, b)| a.eq_ignore_ascii_case(b)))
+}
+
+/// Known distro markers to look for in a grub.cfg. Ordered so specific spins are
+/// matched before their base (Parrot/Kali before Debian; archiso before arch).
+const DISTRO_MARKERS: &[(&str, &str)] = &[
+    ("parrot", "Parrot OS"),
+    ("kali", "Kali Linux"),
+    ("linuxmint", "Linux Mint"),
+    ("zorin", "Zorin OS"),
+    ("tails", "Tails"),
+    ("pop!_os", "Pop!_OS"),
+    ("pop_os", "Pop!_OS"),
+    ("elementary", "elementary OS"),
+    ("manjaro", "Manjaro"),
+    ("endeavour", "EndeavourOS"),
+    ("nixos", "NixOS"),
+    ("fedora", "Fedora"),
+    ("casper", "Ubuntu"),   // Ubuntu's live boot dir
+    ("ubuntu", "Ubuntu"),
+    ("archiso", "Arch Linux"),
+    ("archlinux", "Arch Linux"),
+    ("debian", "Debian"),
+];
+
+/// Identify the distro from the text of a grub.cfg by the first known marker.
+fn distro_from_grub_cfg(bytes: &[u8]) -> Option<alloc::string::String> {
+    let text = core::str::from_utf8(bytes).ok()?;
+    let lower = text.to_ascii_lowercase();
+    for (marker, name) in DISTRO_MARKERS {
+        if lower.contains(marker) {
+            return Some(alloc::string::String::from(*name));
+        }
+    }
+    None
+}
+
+/// Turn the first line of a product-info file into a clean, short menu title:
+/// take the text before the first `"` codename or ` - ` release suffix, trim, and
+/// cap the length. Total on any input.
+fn clean_product_name(bytes: &[u8]) -> Option<alloc::string::String> {
+    let text = core::str::from_utf8(bytes).ok()?;
+    let line = text.lines().next()?.trim();
+    if line.is_empty() {
+        return None;
+    }
+    let name = line.split('"').next().unwrap_or(line);
+    let name = name.split(" - ").next().unwrap_or(name).trim();
+    if name.is_empty() {
+        return None;
+    }
+    Some(name.chars().take(48).collect())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use ports::mock::MockFileStore;
+
+    #[test]
+    fn finds_windows_when_present() {
+        let fs = MockFileStore::new().with_file(WINDOWS_LOADER, b"MZ");
+        let e = discover(&fs);
+        assert_eq!(e.len(), 1);
+        assert_eq!(e[0].kind, OsKind::Windows);
+        assert_eq!(e[0].loader.as_deref(), Some(WINDOWS_LOADER));
+    }
+
+    #[test]
+    fn empty_esp_yields_nothing() {
+        assert!(discover(&MockFileStore::new()).is_empty());
+    }
+
+    #[test]
+    fn names_the_fallback_from_disk_info() {
+        let info = b"Ubuntu 26.04.1 LTS \"Plucky Puffin\" - Release amd64 (20260421)\n";
+        let fs = MockFileStore::new()
+            .with_file(FALLBACK_LOADER, b"MZ")
+            .with_file("\\.disk\\info", info);
+        let e = discover(&fs);
+        assert_eq!(e.len(), 1);
+        assert_eq!(e[0].title, "Ubuntu 26.04.1 LTS", "clean product name, no codename/release suffix");
+        assert_eq!(e[0].loader.as_deref(), Some(FALLBACK_LOADER));
+    }
+
+    #[test]
+    fn falls_back_to_generic_title_without_disk_info() {
+        let fs = MockFileStore::new().with_file(FALLBACK_LOADER, b"MZ");
+        let e = discover(&fs);
+        assert_eq!(e.len(), 1);
+        assert_eq!(e[0].title, "EFI Fallback Loader");
+    }
+
+    #[test]
+    fn names_ubuntu_from_grub_cfg() {
+        // The EFI-partition grub.cfg names the distro via a menuentry / casper dir.
+        let cfg = b"menuentry \"Try or Install Ubuntu\" {\n  linux /casper/vmlinuz ---\n}\n";
+        let fs = MockFileStore::new()
+            .with_file(FALLBACK_LOADER, b"MZ")
+            .with_file("\\EFI\\BOOT\\grub.cfg", cfg);
+        let e = discover(&fs);
+        assert_eq!(e[0].title, "Ubuntu");
+    }
+
+    #[test]
+    fn names_parrot_from_grub_cfg_over_debian_base() {
+        // Parrot is Debian-based; the specific marker must win over "debian".
+        let cfg = b"# Parrot home Live Boot Menu\nmenuentry 'Parrot' { linux /live/vmlinuz boot=live }\n";
+        let fs = MockFileStore::new()
+            .with_file(FALLBACK_LOADER, b"MZ")
+            .with_file("\\boot\\grub\\grub.cfg", cfg);
+        let e = discover(&fs);
+        assert_eq!(e[0].title, "Parrot OS");
+    }
+
+    #[test]
+    fn names_from_boot_csv_label() {
+        // shim's BOOT.CSV: loader,label,options,description
+        let csv = b"shimx64.efi,ubuntu,,This is the boot entry for ubuntu\n";
+        let fs = MockFileStore::new()
+            .with_file(FALLBACK_LOADER, b"MZ")
+            .with_file("\\EFI\\BOOT\\BOOT.CSV", csv);
+        let e = discover(&fs);
+        assert_eq!(e[0].title, "Ubuntu", "bare 'ubuntu' label prettified via marker table");
+    }
+
+    #[test]
+    fn names_by_scanning_the_loader_binary() {
+        // No config, no CSV — only the loader, which embeds a distro string.
+        let mut loader = alloc::vec::Vec::from(*b"MZ\x90\x00 GRUB image ");
+        loader.extend_from_slice(b"prefix=(cd0)/casper stuff \x00\x01");
+        let fs = MockFileStore::new().with_file(FALLBACK_LOADER, &loader);
+        let e = discover(&fs);
+        assert_eq!(e[0].title, "Ubuntu", "casper marker in the binary maps to Ubuntu");
+    }
+}

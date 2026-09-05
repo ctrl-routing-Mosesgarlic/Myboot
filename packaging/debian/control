@@ -1,0 +1,18 @@
+Source: myboot
+Section: admin
+Priority: optional
+Maintainer: Moses <ctrl-routing-Mosesgarlic@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13), cargo, rustc
+Standards-Version: 4.6.2
+Homepage: https://github.com/ctrl-routing-Mosesgarlic/Myboot
+Rules-Requires-Root: no
+
+Package: myboot
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, efibootmgr
+Recommends: dosfstools
+Description: intelligent, transactional UEFI boot manager
+ MyBoot discovers the operating systems on every disk at boot time (no config to
+ generate), presents a menu, and chainloads the chosen OS with a transactional,
+ roll-back-safe lifecycle. Ships the host CLI and the myboot.efi payload; run
+ "myboot install" to place it on the EFI System Partition.

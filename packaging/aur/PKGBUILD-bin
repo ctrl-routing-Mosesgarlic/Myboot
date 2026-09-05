@@ -1,0 +1,21 @@
+# Maintainer: Moses (ctrl-routing-Mosesgarlic)
+pkgname=myboot-bin
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Intelligent, transactional UEFI boot manager (prebuilt binaries)"
+arch=('x86_64')
+url="https://github.com/ctrl-routing-Mosesgarlic/Myboot"
+license=('MIT' 'Apache')
+depends=('efibootmgr')
+provides=('myboot')
+conflicts=('myboot')
+source=(
+  "myboot.efi::https://github.com/ctrl-routing-Mosesgarlic/Myboot/releases/download/v$pkgver/myboot.efi"
+  "myboot-x86_64-linux::https://github.com/ctrl-routing-Mosesgarlic/Myboot/releases/download/v$pkgver/myboot-x86_64-linux"
+)
+sha256sums=('SKIP' 'SKIP')  # replace with the release .sha256 values
+
+package() {
+  install -Dm644 myboot.efi          "$pkgdir/usr/lib/myboot/myboot.efi"
+  install -Dm755 myboot-x86_64-linux "$pkgdir/usr/bin/myboot"
+}

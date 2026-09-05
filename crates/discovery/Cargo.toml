@@ -1,0 +1,14 @@
+[package]
+name = "discovery"
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+graph = { path = "../graph" }
+storage = { path = "../storage" }
+ports = { path = "../ports" }
+persistence = { path = "../persistence" }
+
+[dev-dependencies]
+ports = { path = "../ports", features = ["mock"] }

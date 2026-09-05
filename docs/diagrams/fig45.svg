@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="520" viewBox="0 0 1180 520" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="a5" markerWidth="11" markerHeight="11" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker>
+  </defs>
+  <style>
+    .b{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.5}
+    .file{fill:#FFFFFF;stroke:#2E5496;stroke-width:1.5}
+    .t{fill:#16324f;font-size:15px;text-anchor:middle}
+    .mono{font-family:Consolas,monospace;font-size:13px}
+    .s{fill:#4a6076;font-size:12px;text-anchor:middle}
+    .e{stroke:#1F3864;stroke-width:1.8;fill:none}
+    .el{fill:#1F3864;font-size:13px;font-weight:bold;text-anchor:middle}
+    .qemu{fill:#F4F1FB;stroke:#5B3FA0;stroke-width:2}
+    .qt{fill:#3d2a70;font-size:15px;font-weight:bold}
+    .pf{fill:#EDE7F9;stroke:#5B3FA0;stroke-width:1.3}
+    .side{fill:#EAF6EC;stroke:#2E7D32;stroke-width:1.5}
+    .cap{fill:#555;font-size:13px}
+  </style>
+
+  <!-- host build -->
+  <rect class="b" x="40" y="70" width="300" height="70" rx="8"/>
+  <text class="t" x="190" y="100">Host build</text>
+  <text class="s mono" x="190" y="122">cargo build --target</text>
+  <text class="s mono" x="190" y="137">x86_64-unknown-uefi</text>
+
+  <rect class="file" x="40" y="200" width="300" height="60" rx="8"/>
+  <text class="t mono" x="190" y="226">myboot.efi</text>
+  <text class="s" x="190" y="246">target/…/debug/</text>
+
+  <rect class="file" x="40" y="320" width="300" height="70" rx="8"/>
+  <text class="t mono" x="190" y="348">esp/EFI/BOOT/</text>
+  <text class="t mono" x="190" y="368">BOOTX64.EFI</text>
+
+  <line class="e" x1="190" y1="140" x2="190" y2="200" marker-end="url(#a5)"/>
+  <line class="e" x1="190" y1="260" x2="190" y2="320" marker-end="url(#a5)"/>
+  <text class="el" x="240" y="175">build</text>
+  <text class="el" x="240" y="295">copy</text>
+
+  <!-- QEMU box -->
+  <rect class="qemu" x="470" y="60" width="470" height="360" rx="10"/>
+  <text class="qt" x="490" y="88">QEMU  (qemu-system-x86_64)</text>
+  <rect class="pf" x="500" y="110" width="410" height="52" rx="6"/><text class="t mono" x="705" y="132">OVMF_CODE.fd</text><text class="s" x="705" y="150">-drive if=pflash,readonly=on</text>
+  <rect class="pf" x="500" y="176" width="410" height="52" rx="6"/><text class="t mono" x="705" y="198">OVMF_VARS.fd</text><text class="s" x="705" y="216">-drive if=pflash (writable NVRAM)</text>
+  <rect class="pf" x="500" y="242" width="410" height="52" rx="6"/><text class="t mono" x="705" y="264">-drive format=raw,file=fat:rw:esp</text><text class="s" x="705" y="282">host folder exposed as the ESP</text>
+  <rect class="b"  x="560" y="322" width="290" height="60" rx="8"/><text class="t" x="705" y="348">UEFI firmware boots</text><text class="s mono" x="705" y="368">\EFI\BOOT\BOOTX64.EFI</text>
+
+  <line class="e" x1="340" y1="355" x2="500" y2="290" marker-end="url(#a5)"/>
+
+  <!-- side channels -->
+  <rect class="side" x="990" y="120" width="160" height="60" rx="8"/><text class="t" x="1070" y="146">Host terminal</text><text class="s mono" x="1070" y="166">-serial stdio</text>
+  <rect class="side" x="990" y="250" width="160" height="70" rx="8"/><text class="t" x="1070" y="276">GDB</text><text class="s mono" x="1070" y="296">-s -S</text><text class="s mono" x="1070" y="312">tcp:1234</text>
+
+  <line class="e" x1="940" y1="150" x2="990" y2="150" marker-end="url(#a5)"/>
+  <line class="e" x1="940" y1="285" x2="990" y2="285" marker-end="url(#a5)"/>
+
+  <text class="cap" x="40" y="450">Every build cycle runs the freshly compiled image in an isolated virtual machine: OVMF supplies UEFI firmware, the host</text>
+  <text class="cap" x="40" y="470">esp/ folder is mounted read/write as the EFI System Partition, serial output is redirected to the terminal, and -s -S freezes</text>
+  <text class="cap" x="40" y="490">the CPU at start with a GDB stub on port 1234 — allowing the boot manager to be broken deliberately without risking real hardware.</text>
+</svg>

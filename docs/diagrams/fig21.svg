@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="520" viewBox="0 0 1180 520" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="m2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker></defs>
+<style>.b{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.5}.t{fill:#16324f;font-size:15px;text-anchor:middle}.s{fill:#4a6076;font-size:12px;text-anchor:middle}
+.h{fill:#1F3864;font-size:18px;font-weight:bold;text-anchor:middle}.e{stroke:#1F3864;stroke-width:1.7;fill:none}.cap{fill:#555;font-size:13px}</style>
+<line x1="590" y1="30" x2="590" y2="470" stroke="#c9d6e8" stroke-width="1.5" stroke-dasharray="4 4"/>
+<text class="h" x="300" y="50">Legacy BIOS  ·  MBR</text>
+<text class="h" x="880" y="50">UEFI  ·  GPT</text>
+<rect class="b" x="170" y="80" width="260" height="44" rx="6"/><text class="t" x="300" y="100">MBR — LBA 0 (512 bytes)</text><text class="s" x="300" y="116">16-bit real mode</text>
+<rect class="b" x="170" y="150" width="260" height="40" rx="6"/><text class="t" x="300" y="175">stage 1 → stage 2 loader</text>
+<rect class="b" x="170" y="216" width="260" height="40" rx="6"/><text class="t" x="300" y="241">switch to 32/64-bit mode</text>
+<rect class="b" x="170" y="282" width="260" height="40" rx="6"/><text class="t" x="300" y="307">load kernel</text>
+<g class="e" marker-end="url(#m2)"><line x1="300" y1="124" x2="300" y2="150"/><line x1="300" y1="190" x2="300" y2="216"/><line x1="300" y1="256" x2="300" y2="282"/></g>
+<rect class="b" x="750" y="80" width="260" height="44" rx="6"/><text class="t" x="880" y="100">GPT + ESP (FAT32)</text><text class="s" x="880" y="116">64-bit, flat memory</text>
+<rect class="b" x="750" y="150" width="260" height="40" rx="6"/><text class="t" x="880" y="175">PE/COFF .efi application</text>
+<rect class="b" x="750" y="216" width="260" height="40" rx="6"/><text class="t" x="880" y="241">boot services + protocols</text>
+<rect class="b" x="750" y="282" width="260" height="40" rx="6"/><text class="t" x="880" y="307">load kernel / chainload</text>
+<g class="e" marker-end="url(#m2)"><line x1="880" y1="124" x2="880" y2="150"/><line x1="880" y1="190" x2="880" y2="216"/><line x1="880" y1="256" x2="880" y2="282"/></g>
+<text class="cap" x="140" y="380">BIOS executes one 512-byte sector, forcing a multi-stage loader written largely in assembly.</text>
+<text class="cap" x="140" y="400">UEFI loads a normal PE/COFF executable from a FAT partition and exposes services and a framebuffer,</text>
+<text class="cap" x="140" y="420">so a modern boot manager can be written almost entirely in a high-level language. MyBoot targets UEFI exclusively.</text>
+</svg>

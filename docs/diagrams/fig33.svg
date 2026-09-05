@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="640" viewBox="0 0 1180 640" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="a3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker></defs>
+<style>.s{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.6}.st{fill:#16324f;font-size:15px;text-anchor:middle;font-weight:bold}
+.acc{fill:#EAF6EC;stroke:#2E7D32;stroke-width:2}.rec{fill:#FDECD9;stroke:#C55A11;stroke-width:2}
+.e{stroke:#1F3864;stroke-width:1.7;fill:none}.el{fill:#1F3864;font-size:12.5px}.eg{fill:#2E7D32;font-size:12.5px}.eo{fill:#C55A11;font-size:12.5px}.cap{fill:#555;font-size:13px}</style>
+<!-- states -->
+<circle class="s" cx="120" cy="120" r="46"/><text class="st" x="120" y="125">Idle</text>
+<circle class="s" cx="320" cy="120" r="52"/><text class="st" x="320" y="125">Selected</text>
+<circle class="s" cx="540" cy="120" r="54"/><text class="st" x="540" y="120">Validated</text>
+<circle class="s" cx="760" cy="120" r="48"/><text class="st" x="760" y="125">Staged</text>
+<circle class="s" cx="960" cy="120" r="52"/><text class="st" x="960" y="125">Launched</text>
+<circle class="acc" cx="960" cy="330" r="56"/><text class="st" x="960" y="335">Confirmed</text>
+<circle class="s" cx="620" cy="330" r="48"/><text class="st" x="620" y="335">Failed</text>
+<circle class="rec" cx="320" cy="330" r="54"/><text class="st" x="320" y="335">Recovery</text>
+<!-- accept marks -->
+<circle cx="960" cy="330" r="49" fill="none" stroke="#2E7D32" stroke-width="1"/>
+<circle cx="320" cy="330" r="47" fill="none" stroke="#C55A11" stroke-width="1"/>
+<!-- edges -->
+<g class="e" marker-end="url(#a3)">
+<line x1="166" y1="120" x2="268" y2="120"/>
+<line x1="372" y1="120" x2="486" y2="120"/>
+<line x1="594" y1="120" x2="712" y2="120"/>
+<line x1="808" y1="120" x2="908" y2="120"/>
+<line x1="960" y1="172" x2="960" y2="274"/>
+<path d="M930,165 C820,250 720,270 668,300"/>
+<path d="M572,330 C480,330 430,330 374,330"/>
+<path d="M600,285 C560,180 440,150 372,133"/>
+</g>
+<text class="el" x="200" y="110">Select</text>
+<text class="el" x="405" y="110">Validate</text>
+<text class="el" x="612" y="110">Stage (charge attempt)</text>
+<text class="el" x="820" y="110">Launch</text>
+<text class="eg" x="975" y="230">ConfirmSuccess</text>
+<text class="eo" x="720" y="250">DetectFailure</text>
+<text class="eo" x="430" y="352">Recover  (no entry bootable)</text>
+<text class="el" x="430" y="215">RollBack  (fallback exists)</text>
+<text class="cap" x="60" y="470" font-weight="bold" fill="#1F3864">Terminal states:  Confirmed (booted, committed) · Recovery (controlled recovery).</text>
+<text class="cap" x="60" y="495">The machine can never dead-end: from Failed, exactly one of RollBack or Recover is always enabled — the NoDeadEnd safety invariant of the</text>
+<text class="cap" x="60" y="515">TLA+ specification (§3.11). Under fairness, every run eventually reaches Confirmed or Recovery (EventuallyResolved). Staging charges the attempt</text>
+<text class="cap" x="60" y="535">before handoff, so a boot that crashes after control has left the manager is counted against the entry and triggers rollback on the next boot.</text>
+</svg>

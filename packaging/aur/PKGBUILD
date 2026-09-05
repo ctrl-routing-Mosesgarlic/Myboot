@@ -1,0 +1,33 @@
+# Maintainer: Moses (ctrl-routing-Mosesgarlic)
+pkgname=myboot
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Intelligent, transactional UEFI boot manager that auto-discovers OSes (Rust)"
+arch=('x86_64')
+url="https://github.com/ctrl-routing-Mosesgarlic/Myboot"
+license=('MIT' 'Apache')
+depends=('efibootmgr')
+optdepends=('dosfstools: create/repair the EFI System Partition')
+makedepends=('rust' 'cargo')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/ctrl-routing-Mosesgarlic/Myboot/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')  # replace with the real checksum for the tagged tarball
+
+build() {
+  cd "Myboot-$pkgver"
+  rustup target add x86_64-unknown-uefi 2>/dev/null || true
+  cargo build -p myboot --release --target x86_64-unknown-uefi
+  cargo build --manifest-path host-cli/Cargo.toml --release
+}
+
+package() {
+  cd "Myboot-$pkgver"
+  # The UEFI application (copied to the ESP by `myboot install`)
+  install -Dm644 target/x86_64-unknown-uefi/release/myboot.efi \
+    "$pkgdir/usr/lib/myboot/myboot.efi"
+  # The host-side management CLI
+  install -Dm755 host-cli/target/release/myboot "$pkgdir/usr/bin/myboot"
+  # Licenses + docs
+  install -Dm644 LICENSE-MIT    "$pkgdir/usr/share/licenses/$pkgname/LICENSE-MIT"
+  install -Dm644 LICENSE-APACHE "$pkgdir/usr/share/licenses/$pkgname/LICENSE-APACHE"
+  install -Dm644 INSTALL_GUIDE.md "$pkgdir/usr/share/doc/$pkgname/INSTALL_GUIDE.md"
+}

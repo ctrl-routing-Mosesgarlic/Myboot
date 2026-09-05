@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1F3864"/></marker></defs>
+<style>.b{fill:#EAF0F8;stroke:#2E5496;stroke-width:1.4}.t{fill:#16324f;font-size:13.5px;text-anchor:middle}
+.hb{fill:#1F3864}.ht{fill:#fff;font-size:14px;text-anchor:middle;font-weight:bold}
+.eng{fill:#F4F1FB;stroke:#5B3FA0;stroke-width:1.8}.et{fill:#3d2a70;font-size:14px;font-weight:bold}
+.e{stroke:#1F3864;stroke-width:1.6;fill:none}.el{fill:#1F3864;font-size:12px;text-anchor:middle}.cap{fill:#555;font-size:13px}</style>
+<!-- interfaces top -->
+<rect class="b" x="120" y="30" width="200" height="38" rx="6"/><text class="t" x="220" y="54">graphical menu (ui-gfx)</text>
+<rect class="b" x="490" y="30" width="200" height="38" rx="6"/><text class="t" x="590" y="54">pre-boot shell (ui-shell)</text>
+<rect class="b" x="860" y="30" width="200" height="38" rx="6"/><text class="t" x="960" y="54">host CLI (host-cli)</text>
+<!-- engine -->
+<rect class="eng" x="90" y="110" width="1000" height="230" rx="12"/><text class="et" x="110" y="134">Engine</text>
+<rect class="b" x="120" y="150" width="150" height="40" rx="6"/><text class="t" x="195" y="175">discovery</text>
+<rect class="b" x="300" y="150" width="170" height="40" rx="6"/><text class="t" x="385" y="175">graph (Boot Graph)</text>
+<rect class="b" x="500" y="150" width="130" height="40" rx="6"/><text class="t" x="565" y="175">providers</text>
+<rect class="b" x="660" y="150" width="120" height="40" rx="6"/><text class="t" x="720" y="175">health</text>
+<rect class="b" x="810" y="150" width="120" height="40" rx="6"/><text class="t" x="870" y="175">policy</text>
+<rect class="b" x="300" y="215" width="170" height="40" rx="6"/><text class="t" x="385" y="240">transaction</text>
+<rect class="b" x="500" y="215" width="170" height="40" rx="6"/><text class="t" x="585" y="240">config + reconcile</text>
+<rect class="b" x="700" y="215" width="160" height="40" rx="6"/><text class="t" x="780" y="240">security</text>
+<rect class="b" x="120" y="280" width="810" height="40" rx="6"/><text class="t" x="525" y="305">platform (uefi-rs): GOP · storage/Block I/O · file protocols · variable services</text>
+<!-- firmware -->
+<rect class="hb" x="90" y="380" width="1000" height="42" rx="4"/><text class="ht" x="590" y="406">UEFI firmware  ·  boot services / runtime services / NVRAM variables</text>
+<!-- os -->
+<rect class="hb" x="430" y="470" width="320" height="40" rx="6" fill="#C55A11" stroke="#8a3d0b"/><text class="ht" x="590" y="495">operating system (after ExitBootServices)</text>
+<!-- arrows -->
+<g class="e" marker-end="url(#a)">
+<line x1="220" y1="68" x2="300" y2="110"/><line x1="590" y1="68" x2="500" y2="110"/><line x1="960" y1="68" x2="800" y2="110"/>
+<line x1="195" y1="190" x2="330" y2="215"/><line x1="525" y1="320" x2="525" y2="380"/>
+<line x1="590" y1="422" x2="590" y2="470"/>
+</g>
+<text class="el" x="470" y="205">Boot Graph feeds the UI · selection drives the transaction</text>
+<text class="cap" x="90" y="540">Runtime data flow: discovery reads firmware and disks through the platform layer; the Boot Graph feeds the three interfaces; a selection enters the transaction manager, which launches through the execution path and exits boot services to the OS.</text>
+</svg>

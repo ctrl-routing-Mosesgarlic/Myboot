@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_build:
+	rustup target add x86_64-unknown-uefi || true
+	cargo build -p myboot --release --target x86_64-unknown-uefi
+	cargo build --manifest-path host-cli/Cargo.toml --release
+
+override_dh_auto_install:
+	install -Dm644 target/x86_64-unknown-uefi/release/myboot.efi \
+	  debian/myboot/usr/lib/myboot/myboot.efi
+	install -Dm755 host-cli/target/release/myboot debian/myboot/usr/bin/myboot
