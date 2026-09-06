@@ -98,20 +98,24 @@ ok "MyBoot placed at $DEST (other loaders untouched)"
 
 # --- register the firmware entry --------------------------------------------
 register() {
-  SRC="$(findmnt -no SOURCE "$ESP" 2>/dev/null || true)"
-  case "$SRC" in /dev/*) : ;; *) warn "could not determine ESP device; register manually (see below)."; return 1;; esac
-  case "$SRC" in
-    *[0-9]) ;; *) warn "'$SRC' has no partition number; register manually."; return 1;;
-  esac
-  # split disk + partition number (handles nvme/mmcblk pN and sdXN)
-  case "$SRC" in
-    *nvme*p[0-9]*|*mmcblk*p[0-9]*|*loop*p[0-9]*)
-      PART="${SRC##*p}"; DISK="${SRC%p*}";;
-    *) PART="$(printf '%s' "$SRC" | sed 's/.*[^0-9]//')"; DISK="$(printf '%s' "$SRC" | sed 's/[0-9]*$//')";;
-  esac
-  efibootmgr --create --disk "$DISK" --part "$PART" \
-    --loader '\EFI\MyBoot\BOOTX64.EFI' --label "$LABEL" --unicode >/dev/null
-  ok "registered a '$LABEL' firmware boot entry (disk=$DISK part=$PART)"
+  if efibootmgr | grep -q "^Boot[0-9A-F]\{4\}.* $LABEL\$"; then
+    ok "a '$LABEL' firmware boot entry already exists; leaving it (updating the file is enough)"
+  else
+    SRC="$(findmnt -no SOURCE "$ESP" 2>/dev/null || true)"
+    case "$SRC" in /dev/*) : ;; *) warn "could not determine ESP device; register manually (see below)."; return 1;; esac
+    case "$SRC" in
+      *[0-9]) ;; *) warn "'$SRC' has no partition number; register manually."; return 1;;
+    esac
+    # split disk + partition number (handles nvme/mmcblk pN and sdXN)
+    case "$SRC" in
+      *nvme*p[0-9]*|*mmcblk*p[0-9]*|*loop*p[0-9]*)
+        PART="${SRC##*p}"; DISK="${SRC%p*}";;
+      *) PART="$(printf '%s' "$SRC" | sed 's/.*[^0-9]//')"; DISK="$(printf '%s' "$SRC" | sed 's/[0-9]*$//')";;
+    esac
+    efibootmgr --create --disk "$DISK" --part "$PART" \
+      --loader '\EFI\MyBoot\BOOTX64.EFI' --label "$LABEL" --unicode >/dev/null
+    ok "registered a '$LABEL' firmware boot entry (disk=$DISK part=$PART)"
+  fi
   if [ "${MYBOOT_MAKE_DEFAULT:-0}" = "1" ]; then
     NUM="$(efibootmgr | sed -n "s/^Boot\([0-9A-F]\{4\}\).* $LABEL\$/\1/p" | head -n1)"
     REST="$(efibootmgr | sed -n 's/^BootOrder: //p' | tr ',' '\n' | grep -v "^$NUM$" | paste -sd, -)"
