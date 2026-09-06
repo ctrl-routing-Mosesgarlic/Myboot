@@ -109,9 +109,10 @@ pub fn run() -> Result<core::convert::Infallible, EngineError> {
     let strategy = map_strategy(&cfg);
     let decision = policy::decide(&graph, &history, strategy);
 
-    // (7) present the menu and get the user's (or timeout's) choice
-    let chosen = match present(&graph, &decision, timeout_secs(&cfg)) {
-        Some(id) => id,
+    // (7) present the menu and get the user's (or timeout's) choice, plus an
+    //     optional edited kernel command line (the "E" hotkey).
+    let (chosen, cmd_override) = match present(&graph, &decision, timeout_secs(&cfg)) {
+        Some(sel) => sel,
         None => return Err(EngineError::NoBootableEntries),
     };
 
@@ -135,6 +136,11 @@ pub fn run() -> Result<core::convert::Infallible, EngineError> {
             Some(p) => p,
             None => { log::info!("myboot: no launch plan for '{}'; skipping", cand.as_str()); continue; }
         };
+        // Apply an edited command line, but only to the entry the user actually
+        // edited (the chosen one).
+        let plan = if cand == &chosen {
+            apply_cmdline_override(plan, cmd_override.as_deref())
+        } else { plan };
 
         // Transaction up to the point of handoff (charges the attempt, arms the
         // marker). `select` refuses an entry that is unbootable or out of tries,
@@ -219,14 +225,16 @@ fn persist_tries<V: VarStore>(_vars: &mut V, _tx: &Transaction, _graph: &BootGra
 
 /// Present the graphical menu, honouring the timeout, and return the chosen id.
 /// Falls back to the policy decision on timeout, or the first bootable entry.
-fn present(graph: &BootGraph, decision: &Option<policy::Decision>, timeout: u16) -> Option<EntryId> {
+fn present(graph: &BootGraph, decision: &Option<policy::Decision>, timeout: u16)
+    -> Option<(EntryId, Option<alloc::string::String>)> {
     // Acquire graphics; if unavailable, auto-select the decision (headless).
     let mut fb = match Framebuffer::acquire() {
         Ok(fb) => fb,
         Err(e) => {
             log::info!("myboot: GOP unavailable ({e:?}); selecting headlessly");
             return decision.as_ref().map(|d| d.chosen.clone())
-                .or_else(|| graph.bootable().next().map(|e| e.id.clone()));
+                .or_else(|| graph.bootable().next().map(|e| e.id.clone()))
+                .map(|id| (id, None));
         }
     };
 
@@ -240,30 +248,123 @@ fn present(graph: &BootGraph, decision: &Option<policy::Decision>, timeout: u16)
 
     let deadline_ticks = timeout as u64; // one tick ≈ 1s via stall loop below
     let mut elapsed = 0u64;
+    let mut counting = deadline_ticks != 0;
 
     loop {
-        // draw
+        // draw (with the live auto-boot countdown, or None once cancelled)
         {
+            let remaining = if counting { Some((deadline_ticks - elapsed) as u32) } else { None };
             let mut canvas = FbCanvas { fb: &mut fb };
-            ui_gfx::render::draw(&mut canvas, &menu, "MyBoot");
+            ui_gfx::render::draw(&mut canvas, &menu, "Select an operating system", remaining);
         }
         let _ = fb.present();
 
         // poll for a key for ~1s; on timeout, count down.
         match poll_key(Duration::from_secs(1)) {
-            Some(ev) => match menu.handle(ev) {
-                MenuOutcome::Boot(id) => return Some(id),
-                MenuOutcome::Recovery => return graph.bootable().next().map(|e| e.id.clone()),
-                MenuOutcome::Idle => { elapsed = 0; } // reset countdown on interaction
-            },
-            None => {
-                elapsed += 1;
-                if deadline_ticks != 0 && elapsed >= deadline_ticks {
-                    return match menu.handle(InputEvent::Timeout) {
-                        MenuOutcome::Boot(id) => Some(id),
-                        _ => decision.as_ref().map(|d| d.chosen.clone()),
-                    };
+            Some(ev) => {
+                counting = false; // any key cancels auto-boot
+                match menu.handle(ev) {
+                    MenuOutcome::Boot(id) => return Some((id, None)),
+                    MenuOutcome::EditCmdline(id) => {
+                        if let Some(cmd) = edit_cmdline(&mut fb, &menu) {
+                            return Some((id, Some(cmd)));
+                        }
+                    }
+                    MenuOutcome::Recovery => {
+                        if let Some(id) = recovery_screen(graph, &mut fb, None) {
+                            return Some((id, None));
+                        }
+                    }
+                    MenuOutcome::Firmware => to_firmware(),   // resets; only returns on failure
+                    MenuOutcome::Shell => enter_shell(&mut fb),
+                    MenuOutcome::Idle => {}
                 }
+            }
+            None => {
+                if counting {
+                    elapsed += 1;
+                    if elapsed >= deadline_ticks {
+                        return match menu.handle(InputEvent::Timeout) {
+                            MenuOutcome::Boot(id) => Some((id, None)),
+                            _ => decision.as_ref().map(|d| (d.chosen.clone(), None)),
+                        };
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Reboot into the firmware's own setup UI (the "F" hotkey), the standard UEFI way:
+/// set `OsIndications`'s BOOT_TO_FW_UI bit, then cold-reset. Only returns if the
+/// firmware doesn't support it.
+fn to_firmware() {
+    use uefi::runtime::{self, VariableAttributes, VariableVendor, ResetType};
+    if let Ok(name) = uefi::CStr16::from_str_with_buf("OsIndications", &mut [0u16; 16]) {
+        let attrs = VariableAttributes::NON_VOLATILE
+            | VariableAttributes::BOOTSERVICE_ACCESS
+            | VariableAttributes::RUNTIME_ACCESS;
+        let val = 1u64.to_le_bytes(); // EFI_OS_INDICATIONS_BOOT_TO_FW_UI
+        let _ = runtime::set_variable(name, &VariableVendor::GLOBAL_VARIABLE, attrs, &val);
+    }
+    runtime::reset(ResetType::COLD, uefi::Status::SUCCESS, None);
+}
+
+/// Enter a pre-boot UEFI shell (the "S" hotkey) by chainloading a shell binary if
+/// one is present on any volume. Returns to the menu if none is found.
+fn enter_shell(_fb: &mut Framebuffer) {
+    let fs = platform::MultiVolume::discover();
+    for path in ["\\EFI\\Shell\\shellx64.efi", "\\shellx64.efi", "\\EFI\\tools\\shell.efi"] {
+        if fs.exists(path) {
+            // Chainload it; on success we don't return. On failure, fall through.
+            let _ = fs.chainload_on(None, path, "");
+        }
+    }
+    log::info!("myboot: no UEFI shell found on any volume; returning to menu");
+}
+
+/// Edit the kernel command line for the selected entry (the "E" hotkey). Reads a
+/// line from the console; returns the new cmdline, or None if cancelled (Esc).
+fn edit_cmdline(_fb: &mut Framebuffer, menu: &Menu) -> Option<alloc::string::String> {
+    use uefi::proto::console::text::{Input, Key, ScanCode};
+    let title = menu.selected()?.title.clone();
+    log::info!("myboot: edit cmdline for '{title}' (Enter to accept, Esc to cancel)");
+    let handle = boot::get_handle_for_protocol::<Input>().ok()?;
+    let mut input = boot::open_protocol_exclusive::<Input>(handle).ok()?;
+    let mut line = alloc::string::String::new();
+    loop {
+        if let Ok(Some(key)) = input.read_key() {
+            match key {
+                Key::Special(ScanCode::ESCAPE) => return None,
+                Key::Printable(c) => match u16::from(c) {
+                    0x000D => return Some(line),                    // Enter
+                    0x0008 => { line.pop(); }                       // Backspace
+                    ch => { if let Some( c) = char::from_u32(ch as u32) { line.push(c); } }
+                },
+                _ => {}
+            }
+        }
+        boot::stall(10_000);
+    }
+}
+
+/// Draw and drive the recovery screen (fig36). Returns `Some(id)` if the user
+/// chooses an entry to boot, or `None` to return to the main menu.
+fn recovery_screen(graph: &graph::BootGraph, fb: &mut Framebuffer,
+                   failed: Option<&graph::EntryId>) -> Option<graph::EntryId> {
+    use ui_gfx::recovery::{Recovery, RecoveryOutcome};
+    let mut rec = Recovery::from_graph(graph, failed);
+    loop {
+        {
+            let mut canvas = FbCanvas { fb };
+            ui_gfx::render::draw_recovery(&mut canvas, &rec);
+        }
+        let _ = fb.present();
+        if let Some(ev) = poll_key(Duration::from_secs(1)) {
+            match rec.handle(ev) {
+                RecoveryOutcome::Boot(id) => return Some(id),
+                RecoveryOutcome::Back => return None,
+                RecoveryOutcome::Idle => {}
             }
         }
     }
@@ -285,7 +386,14 @@ fn poll_key(timeout: Duration) -> Option<InputEvent> {
                 Key::Special(ScanCode::UP) => InputEvent::Up,
                 Key::Special(ScanCode::DOWN) => InputEvent::Down,
                 Key::Special(ScanCode::ESCAPE) => InputEvent::Escape,
-                Key::Printable(c) if u16::from(c) == 0x000D => InputEvent::Enter, // CR
+                Key::Printable(c) => match u16::from(c) {
+                    0x000D => InputEvent::Enter,               // CR
+                    0x0065 | 0x0045 => InputEvent::Edit,       // e / E
+                    0x0072 | 0x0052 => InputEvent::Recovery,   // r / R
+                    0x0066 | 0x0046 => InputEvent::Firmware,   // f / F
+                    0x0073 | 0x0053 => InputEvent::Shell,      // s / S
+                    _ => continue,
+                },
                 _ => continue,
             });
         }
@@ -303,6 +411,18 @@ fn plan_for(graph: &BootGraph, id: &EntryId) -> Option<LaunchPlan> {
 /// Dispatch the launch plan: EFI-stub / chainload go through firmware LoadImage
 /// (the default, Secure-Boot-verified path); a direct kernel goes through the
 /// `arch` boot-protocol handoff (`direct_boot`).
+/// Replace a launch plan's command line with a user-edited one (the "E" hotkey).
+/// An empty override leaves the plan unchanged.
+fn apply_cmdline_override(plan: LaunchPlan, cmd: Option<&str>) -> LaunchPlan {
+    let cmd = match cmd { Some(c) if !c.is_empty() => c, _ => return plan };
+    match plan {
+        LaunchPlan::Chainload { image, initrd, .. } =>
+            LaunchPlan::Chainload { image, options: Some(cmd.into()), initrd },
+        LaunchPlan::DirectKernel { kernel, initrd, .. } =>
+            LaunchPlan::DirectKernel { kernel, initrd, cmdline: Some(cmd.into()) },
+    }
+}
+
 fn launch(plan: LaunchPlan, fs: &platform::MultiVolume, volume: Option<&str>) -> Result<core::convert::Infallible, EngineError> {
     match plan {
         LaunchPlan::Chainload { image, options, initrd } => {

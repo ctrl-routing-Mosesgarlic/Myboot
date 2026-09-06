@@ -33,11 +33,18 @@ impl HealthTag {
 
 /// Input events the menu understands (mapped from raw key events by the caller).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum InputEvent { Up, Down, Enter, Escape, Timeout }
+pub enum InputEvent { Up, Down, Enter, Escape, Timeout, Edit, Recovery, Firmware, Shell }
 
 /// What the engine should do after handling an event.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub enum MenuOutcome { Idle, Boot(EntryId), Recovery }
+pub enum MenuOutcome {
+    Idle,
+    Boot(EntryId),
+    EditCmdline(EntryId),
+    Recovery,
+    Firmware,
+    Shell,
+}
 
 /// The menu state: the rows and the current cursor position.
 pub struct Menu {
@@ -82,7 +89,15 @@ impl Menu {
                 Some(r) if r.bootable => MenuOutcome::Boot(r.id.clone()),
                 _ => MenuOutcome::Idle,
             },
-            InputEvent::Escape => MenuOutcome::Recovery,
+            InputEvent::Edit => match self.selected() {
+                Some(r) if r.bootable => MenuOutcome::EditCmdline(r.id.clone()),
+                _ => MenuOutcome::Idle,
+            },
+            InputEvent::Recovery => MenuOutcome::Recovery,
+            InputEvent::Firmware => MenuOutcome::Firmware,
+            InputEvent::Shell => MenuOutcome::Shell,
+            // Esc has nothing to go "back" to on the top menu; it's a no-op there.
+            InputEvent::Escape => MenuOutcome::Idle,
         }
     }
 
@@ -143,9 +158,17 @@ mod tests {
     }
 
     #[test]
-    fn escape_requests_recovery() {
+    fn hotkeys_route_to_the_right_outcomes() {
         let mut m = Menu::from_graph(&graph());
-        assert_eq!(m.handle(InputEvent::Escape), MenuOutcome::Recovery);
+        assert_eq!(m.handle(InputEvent::Recovery), MenuOutcome::Recovery);
+        assert_eq!(m.handle(InputEvent::Firmware), MenuOutcome::Firmware);
+        assert_eq!(m.handle(InputEvent::Shell), MenuOutcome::Shell);
+        assert_eq!(m.handle(InputEvent::Escape), MenuOutcome::Idle); // nothing to go back to
+        // Edit yields EditCmdline for a bootable selection.
+        match m.handle(InputEvent::Edit) {
+            MenuOutcome::EditCmdline(_) => {}
+            o => panic!("expected EditCmdline, got {o:?}"),
+        }
     }
 
     #[test]

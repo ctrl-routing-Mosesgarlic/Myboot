@@ -1,16 +1,36 @@
-//! The colour palette and metrics for the menu (report §3.10.1). One cohesive
-//! place for visual constants (SRP) — no logic.
+//! The colour palette and metrics for the graphical menu, matching the design in
+//! docs/diagrams/fig35.svg. One cohesive place for visual constants (SRP).
 use crate::canvas::Rgb;
 
-pub const BG: Rgb = Rgb::new(0x0e, 0x12, 0x1a);          // near-black slate
-pub const PANEL: Rgb = Rgb::new(0x18, 0x20, 0x2c);
-pub const TEXT: Rgb = Rgb::new(0xe6, 0xed, 0xf3);
-pub const TEXT_DIM: Rgb = Rgb::new(0x8a, 0x96, 0xa6);
-pub const ACCENT: Rgb = Rgb::new(0x4c, 0x9a, 0xff);       // selection highlight
-pub const OK: Rgb = Rgb::new(0x4c, 0xd9, 0x64);
-pub const WARN: Rgb = Rgb::new(0xf0, 0xc0, 0x36);
-pub const FAIL: Rgb = Rgb::new(0xf0, 0x5c, 0x5c);
+// Background gradient (dark navy slate).
+pub const BG_TOP: Rgb = Rgb::new(0x0d, 0x16, 0x26);
+pub const BG_BOT: Rgb = Rgb::new(0x0a, 0x11, 0x20);
+// Cards / panels.
+pub const CARD: Rgb = Rgb::new(0x16, 0x23, 0x3b);
+pub const CARD_BORDER: Rgb = Rgb::new(0x26, 0x37, 0x5a);
+pub const SEL: Rgb = Rgb::new(0x18, 0x31, 0x53);       // selected card fill
+pub const PANEL: Rgb = Rgb::new(0x11, 0x1d, 0x31);      // detail panel
+pub const DIVIDER: Rgb = Rgb::new(0x22, 0x31, 0x4f);
+// Text.
+pub const TEXT: Rgb = Rgb::new(0xea, 0xf1, 0xfb);
+pub const SUB: Rgb = Rgb::new(0x8f, 0xa1, 0xbc);
+pub const MUT: Rgb = Rgb::new(0x6f, 0x82, 0xa0);
+// Accents / status.
+pub const ACCENT: Rgb = Rgb::new(0x4c, 0x8d, 0xff);
+pub const OK: Rgb = Rgb::new(0x46, 0xc4, 0x6a);
+pub const WARN: Rgb = Rgb::new(0xe0, 0xa6, 0x3a);
+pub const FAIL: Rgb = Rgb::new(0xe5, 0x54, 0x4e);
 
-pub const ROW_HEIGHT: usize = 28;
+// Back-compat aliases (older callers).
+pub const BG: Rgb = BG_TOP;
+pub const TEXT_DIM: Rgb = MUT;
+
+// Metrics (source pixels; text is the 8x8 font scaled by these factors).
 pub const MARGIN: usize = 40;
-pub const GLYPH_SCALE: usize = 2; // 8x8 font drawn at 2x → 16px tall
+pub const TITLE_SCALE: usize = 3;   // brand / big headings  (24px)
+pub const HEAD_SCALE: usize = 2;    // card titles           (16px)
+pub const BODY_SCALE: usize = 2;    // subtitles / details   (16px)
+pub const SMALL_SCALE: usize = 1;   // dense mono details    (8px)
+pub const CARD_H: usize = 92;
+pub const CARD_GAP: usize = 14;
+pub const TOPBAR_H: usize = 82;

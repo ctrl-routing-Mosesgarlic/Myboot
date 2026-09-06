@@ -102,10 +102,35 @@ pub const GLYPHS: [[u8; 8]; 95] = [
     [0x6E,0x3B,0x00,0x00,0x00,0x00,0x00,0x00],
 ];
 
+/// UI symbol glyphs (8x8, bit 0 = leftmost). Used by the menu for the selection
+/// star, health ticks, warnings, and chevrons — the marks in fig35.
+const STAR: [u8; 8]    = [0x08, 0x2A, 0x1C, 0x7F, 0x1C, 0x2A, 0x08, 0x00];
+const CHECK: [u8; 8]   = [0x00, 0x40, 0x60, 0x33, 0x1E, 0x0C, 0x00, 0x00];
+const WARNING: [u8; 8] = [0x08, 0x08, 0x1C, 0x14, 0x3E, 0x36, 0x7F, 0x00];
+const CROSS: [u8; 8]   = [0x00, 0x41, 0x22, 0x14, 0x08, 0x14, 0x22, 0x41];
+const CHEVRON: [u8; 8] = [0x06, 0x1E, 0x7E, 0x1E, 0x06, 0x00, 0x00, 0x00];
+const DOT: [u8; 8]     = [0x00, 0x00, 0x1C, 0x3E, 0x3E, 0x1C, 0x00, 0x00];
+
 /// Look up a glyph; unknown characters render blank.
 pub fn glyph(ch: char) -> [u8; 8] {
     let c = ch as u32;
-    if (0x20..0x7F).contains(&c) { GLYPHS[(c as u8 - FIRST) as usize] } else { [0; 8] }
+    if (0x20..0x7F).contains(&c) {
+        return GLYPHS[(c as u8 - FIRST) as usize];
+    }
+    match ch {
+        '\u{2605}' | '\u{2606}' => STAR,      // ★ ☆
+        '\u{2713}' | '\u{2714}' => CHECK,     // ✓ ✔
+        '\u{26A0}' => WARNING,                // ⚠
+        '\u{2717}' | '\u{2718}' => CROSS,     // ✗ ✘
+        '\u{25B8}' | '\u{25B6}' => CHEVRON,   // ▸ ▶
+        '\u{2022}' | '\u{25CF}' => DOT,       // • ●
+        '\u{2026}' => [0, 0, 0, 0, 0, 0, 0x55, 0], // … (three low dots)
+        '\u{2191}' => [0x08, 0x1C, 0x3E, 0x2A, 0x08, 0x08, 0x08, 0x00], // ↑
+        '\u{2193}' => [0x08, 0x08, 0x08, 0x2A, 0x3E, 0x1C, 0x08, 0x00], // ↓
+        '\u{2195}' => [0x08, 0x1C, 0x3E, 0x08, 0x3E, 0x1C, 0x08, 0x00], // ↕ (up/down)
+        '\u{23CE}' | '\u{21B5}' | '\u{21A9}' => [0x00, 0x20, 0x20, 0x28, 0x3C, 0x08, 0x00, 0x00], // ⏎ return
+        _ => [0; 8],
+    }
 }
 
 /// Width/height of one glyph cell in source pixels.

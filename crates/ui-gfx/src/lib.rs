@@ -14,6 +14,7 @@ pub mod canvas;
 pub mod theme;
 pub mod font;
 pub mod menu;
+pub mod recovery;
 pub mod render;
 
 #[cfg(test)]
