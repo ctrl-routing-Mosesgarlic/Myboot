@@ -24,13 +24,21 @@ OVMF) and lists any number of OSes across any number of disks.
 
 ## Quick install (one line)
 
+**Linux:**
+
 ```sh
 curl -fsSL https://raw.githubusercontent.com/ctrl-routing-Mosesgarlic/Myboot/main/install.sh | sudo sh
 ```
 
-Downloads the latest released `myboot.efi`, verifies its checksum, installs it to
+**Windows** (PowerShell — prompts for Administrator elevation itself, no `sudo`):
+
+```powershell
+irm https://raw.githubusercontent.com/ctrl-routing-Mosesgarlic/Myboot/main/install.ps1 | iex
+```
+
+Both downloads the latest released `myboot.efi`, verify its checksum, install it to
 `\EFI\MyBoot` on your EFI System Partition (coexisting — it never touches your other
-loaders), and registers a firmware boot entry. Reboot and pick **MyBoot** from the
+loaders), and register a firmware boot entry. Reboot and pick **MyBoot** from the
 firmware menu. Full walkthrough and safety notes: [`INSTALL_GUIDE.md`](INSTALL_GUIDE.md).
 
 > **Not on NixOS.** `nixos-rebuild` reverts imperative bootloaders — use the

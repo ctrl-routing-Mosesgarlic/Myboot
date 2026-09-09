@@ -36,9 +36,10 @@ order and every later step becomes easy:
 These need no external maintainer's approval.
 
 - **GitHub Releases** — already the install source. Keep assets + checksums current.
-- **A one-line web installer** — `curl -fsSL https://…/install.sh | sudo sh` that
-  downloads the release `myboot.efi` and runs the install (rustup's model). Host it
-  from the repo.
+- **A one-line web installer** — `curl -fsSL https://…/install.sh | sudo sh` on
+  Linux, `irm https://…/install.ps1 | iex` on Windows (self-elevates instead of
+  `sudo`) — that downloads the release `myboot.efi` and runs the install (rustup's
+  model). Host both from the repo.
 - **Nix flake output** — you already have a flake; expose `packages.myboot` and an
   overlay so Nix users get it with `nix profile install github:you/myboot`. This
   also gives NixOS users the declarative `boot.loader.external` path (the correct way

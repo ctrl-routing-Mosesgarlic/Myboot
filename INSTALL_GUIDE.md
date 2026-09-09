@@ -179,6 +179,31 @@ imperative install above.)
 
 ---
 
+## Windows
+
+The one-liner is a PowerShell script, `install.ps1`, not `install.sh` — Windows has
+no POSIX `sh`/`sudo`/`efibootmgr`, so it's a separate implementation of the same
+"never destroy, just add" contract:
+
+```powershell
+irm https://raw.githubusercontent.com/ctrl-routing-Mosesgarlic/Myboot/main/install.ps1 | iex
+```
+
+It self-elevates (a UAC prompt takes the place of `sudo`), finds the EFI System
+Partition via `Get-Partition` (mounting it to a spare drive letter only if it isn't
+already mounted, and unmounting it again when done), places
+`\EFI\MyBoot\BOOTX64.EFI` + `config.toml` exactly as the Linux installer does, and
+registers a UEFI firmware boot entry with `bcdedit /copy {bootmgr}` +
+`bcdedit /set {fwbootmgr} displayorder` (the Windows equivalent of `efibootmgr
+--create`). Same environment-variable knobs as `install.sh`: `MYBOOT_REPO`,
+`MYBOOT_TAG`, `MYBOOT_ESP` (a drive letter, e.g. `S:`), `MYBOOT_NO_REGISTER=1`,
+`MYBOOT_MAKE_DEFAULT=1`.
+
+To remove the entry: `bcdedit /enum firmware` to find MyBoot's GUID, then
+`bcdedit /delete <guid>` and delete `\EFI\MyBoot` from the ESP.
+
+---
+
 ## Recovering if a boot ever fails
 
 - **MyBoot starts but nothing boots** → it never dead-ends; it falls through to the
