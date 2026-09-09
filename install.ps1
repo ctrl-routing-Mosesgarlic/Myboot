@@ -63,8 +63,10 @@ if (-not $isAdmin) {
 # HKLM\SYSTEM\CurrentControlSet\Control\PEFirmwareType: 1 = legacy BIOS, 2 = UEFI
 # (the registry value the Windows kernel's GetFirmwareType() reads; documented by
 # Microsoft, e.g. KB pages on detecting BIOS vs UEFI without third-party tools).
-$fwType = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control' -Name 'PEFirmwareType' -ErrorAction SilentlyContinue).PEFirmwareType
-if ($fwType -ne 2) { Die "not a UEFI system (PEFirmwareType=$fwType); MyBoot is UEFI-only." }
+$firmwareType = (Get-ComputerInfo -Property BiosFirmwareType).BiosFirmwareType
+if ($firmwareType -ne 'Uefi') {
+    Die "not a UEFI system (BiosFirmwareType=$firmwareType); MyBoot is UEFI-only."
+}
 
 # --- locate the ESP ------------------------------------------------------------
 $Esp = $env:MYBOOT_ESP
