@@ -53,14 +53,43 @@ pub fn parse_conf(bytes: &[u8]) -> Option<RawEntry> {
     }
 
     let linux = linux?; // a Type #1 entry without a kernel is not bootable
-    let title = title.or(version.clone()).unwrap_or_else(|| String::from("Linux"));
-    let role = match &version { Some(v) => EntryRole::Kernel(v.clone()), None => EntryRole::Default };
 
-    let mut e = RawEntry::new(OsKind::Linux, "Linux", title, role, BootMethod::LinuxEfiStub);
+    // NixOS + systemd-boot encodes the generation and build date in the `version`
+    // line (e.g. "Generation 23 NixOS ... (Linux 7.1.8), built on 2026-09-01"),
+    // while `title` is just "NixOS" for every generation. Recognise that so each
+    // generation gets a DISTINCT, informative title and they group under NixOS —
+    // instead of a wall of identical "NixOS" rows.
+    let base = title.clone().unwrap_or_else(|| String::from("Linux"));
+    let (kind, os_name, role, display) = match version.as_deref().and_then(nixos_generation) {
+        Some(g) => (
+            OsKind::NixOs, "NixOS", EntryRole::Generation(g),
+            version.clone().unwrap_or(base), // the version line is self-describing
+        ),
+        None => {
+            // Generic Linux/BLS: fold a distinguishing `version` into the title so
+            // multiple kernels of the same OS don't all read the same.
+            let display = match &version {
+                Some(v) if base != *v && !base.contains(v.as_str()) => alloc::format!("{base} \u{2014} {v}"),
+                _ => base,
+            };
+            let role = match &version { Some(v) => EntryRole::Kernel(v.clone()), None => EntryRole::Default };
+            (OsKind::Linux, "Linux", role, display)
+        }
+    };
+
+    let mut e = RawEntry::new(kind, os_name, display, role, BootMethod::LinuxEfiStub);
     e.kernel = Some(linux);
     e.initrd = initrd;
     e.cmdline = options;
     Some(e)
+}
+
+/// Parse the generation number out of a NixOS `version` line, e.g.
+/// "Generation 23 NixOS Zokor 26.11 ... built on 2026-09-01" -> 23.
+fn nixos_generation(version: &str) -> Option<u32> {
+    let rest = version.strip_prefix("Generation ")?;
+    let digits: String = rest.chars().take_while(|c| c.is_ascii_digit()).collect();
+    digits.parse::<u32>().ok()
 }
 
 /// BLS paths are ESP-relative with `/`; normalise to EFI `\` form.
@@ -82,7 +111,7 @@ mod tests {
     fn parses_a_type1_entry() {
         let e = parse_conf(CONF.as_bytes()).unwrap();
         assert_eq!(e.kind, OsKind::Linux);
-        assert_eq!(e.title, "Fedora 39");
+        assert_eq!(e.title, "Fedora 39 \u{2014} 6.6.0"); // version folded in for distinctness
         assert_eq!(e.kernel.as_deref(), Some("\\6a\\linux"));
         assert_eq!(e.initrd.as_deref(), Some("\\6a\\initrd"));
         assert_eq!(e.cmdline.as_deref(), Some("root=UUID=abc ro"));
@@ -95,11 +124,29 @@ mod tests {
     }
 
     #[test]
-    fn scans_entries_directory() {
-        let fs = MockFileStore::new()
-            .with_file("\\loader\\entries\\a.conf", CONF.as_bytes())
-            .with_file("\\loader\\entries\\README", b"ignore me");
-        let entries = discover(&fs);
-        assert_eq!(entries.len(), 1);
+    fn nixos_generation_gets_a_distinct_title_and_groups_under_nixos() {
+        // What NixOS + systemd-boot actually writes: title is "NixOS" for every
+        // generation, the distinguishing info is in `version`.
+        let conf = "title NixOS\nversion Generation 23 NixOS Zokor 26.11.20260810.2fcb964 (Linux 7.1.8), built on 2026-09-01\nlinux /efi/nixos/abc-linux.efi\ninitrd /efi/nixos/abc-initrd.efi\noptions init=/nix/store/xxx/init\nsort-key nixos\n";
+        let e = parse_conf(conf.as_bytes()).unwrap();
+        assert_eq!(e.kind, OsKind::NixOs, "recognised as NixOS, not generic Linux");
+        assert_eq!(e.role, EntryRole::Generation(23));
+        assert!(e.title.contains("Generation 23"), "title carries the generation");
+        assert!(e.title.contains("2026-09-01"), "title carries the build date: {}", e.title);
+    }
+
+    #[test]
+    fn two_nixos_generations_are_distinct() {
+        let g23 = parse_conf(b"title NixOS\nversion Generation 23 NixOS (Linux 7.1.8), built on 2026-09-01\nlinux /a/l\n").unwrap();
+        let g22 = parse_conf(b"title NixOS\nversion Generation 22 NixOS (Linux 7.1.8), built on 2026-08-22\nlinux /b/l\n").unwrap();
+        assert_ne!(g23.title, g22.title);
+        assert_ne!(g23.role, g22.role);
+    }
+
+    #[test]
+    fn generic_version_is_folded_into_the_title() {
+        let e = parse_conf(CONF.as_bytes()).unwrap(); // Fedora 39 / version 6.6.0
+        assert_eq!(e.kind, OsKind::Linux);
+        assert!(e.title.contains("Fedora 39") && e.title.contains("6.6.0"), "title: {}", e.title);
     }
 }

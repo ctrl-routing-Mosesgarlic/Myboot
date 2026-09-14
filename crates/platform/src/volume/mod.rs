@@ -144,6 +144,21 @@ fn set_options_and_start(image: Handle, options: &str) {
     drop(opts16);
 }
 
+/// Force the firmware to bind filesystem drivers to EVERY partition, so all ESPs
+/// become visible as `SimpleFileSystem`. Many firmwares only connect the volume the
+/// running application was loaded from, so without this `volumes()` returns just one
+/// ESP (and other OSes' loaders — e.g. Arch on a second ESP — are never found).
+/// This mirrors what rEFInd and systemd-boot do. Best-effort and total: errors on
+/// non-controller handles are ignored.
+pub fn connect_all_controllers() {
+    if let Ok(handles) = boot::locate_handle_buffer(boot::SearchType::AllHandles) {
+        for &handle in handles.iter() {
+            // Recursive so child controllers (partitions under a disk) are bound too.
+            let _ = boot::connect_controller(handle, None, None, true);
+        }
+    }
+}
+
 /// All filesystems the firmware knows about, each as a `Volume`.
 pub fn volumes() -> Vec<Volume> {
     match boot::locate_handle_buffer(boot::SearchType::ByProtocol(&SimpleFileSystem::GUID)) {
@@ -174,8 +189,11 @@ pub struct MultiVolume {
 }
 
 impl MultiVolume {
-    /// Enumerate all volumes. Always includes the boot volume for writes.
+    /// Enumerate all volumes. First connects every controller so ALL ESPs are
+    /// exposed (not just the pre-connected boot volume), then always includes the
+    /// boot volume for writes.
     pub fn discover() -> Self {
+        connect_all_controllers();
         MultiVolume { vols: volumes(), boot: crate::fs::UefiFileStore::new() }
     }
 
