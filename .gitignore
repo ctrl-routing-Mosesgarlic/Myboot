@@ -8,3 +8,8 @@
 Cargo.lock
 __pycache__/
 *.pyc
+
+# Independent repo (own remote, own history) nested here by folder location only.
+/website
+# Editor cruft.
+/.idea

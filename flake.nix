@@ -36,6 +36,11 @@
             pkgs.parted
             pkgs.gptfdisk
             pkgs.util-linux
+
+            # website/ (Next.js + TiDB) local dev tooling
+            pkgs.bun
+            pkgs.openssl       # generate BETTER_AUTH_SECRET / IP_HASH_SALT
+            pkgs.mariadb       # mysql/mariadb client, for applying SQL directly to TiDB
           ];
 
           shellHook = ''
